@@ -1,5 +1,9 @@
 source 'https://rubygems.org'
 
-gem 'em-websocket'
-gem 'em-http-server'
+gem 'puma'
+gem 'faye-websocket'
+
 gem 'tmx'
+
+gem 'therubyracer'
+gem 'rack-coffee'
