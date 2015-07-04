@@ -1,5 +1,11 @@
 Bundler.require :default
 
+$LOAD_PATH.push __dir__
+
+# Load local requires. Don't need this for Gems, we do that with Bundler.
+require "lib/websocket"
+require "lib/http"
+
 # Log synchronously to log.txt in this dir
 file = File.new File.join(__dir__, "log.txt"), "a+"
 file.sync = true
@@ -12,32 +18,14 @@ use Rack::Coffee, :urls => ""
 
 #use Rack::Static, :root => "public", :urls => ["/public"]
 
-def get_index_html
-  # Can cache here later
-  File.read "index.html"
-end
-
-my_app = Proc.new do |env|
-  if Faye::WebSocket.websocket?(env)
-    ws = Faye::WebSocket.new(env)
-
-    ws.on :message do |event|
-      puts "Echo server got message!"
-      ws.send(event.data)
+def combined_handler
+  Proc.new do |env|
+    if Faye::WebSocket.websocket? env
+      websocket_handler env
+    else
+      http_handler env
     end
-
-    ws.on :close do |event|
-      p [:close, event.code, event.reason].inspect
-      ws = nil
-    end
-
-    # Return async Rack response
-    ws.rack_response
-
-  else
-    # Normal HTTP request
-    [200, {'Content-Type' => 'text/html'}, [get_index_html]]
   end
 end
 
-run my_app
+run combined_handler

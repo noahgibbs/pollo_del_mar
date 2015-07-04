@@ -11,3 +11,7 @@ Puma (not Thin - Faye needs an extra adapter call for that)
 CoffeeScript
 CreateJS / EaselJS (createjs.com)
 TMX (format for the Tiled editor - mapeditor.org)
+
+## Running
+
+    $ puma config.ru -p 3001
