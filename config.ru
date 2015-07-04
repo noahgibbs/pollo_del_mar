@@ -1,6 +1,10 @@
 Bundler.require :default
 
-use Rack::CommonLogger
+# Log synchronously to log.txt in this dir
+file = File.new File.join(__dir__, "log.txt"), "a+"
+file.sync = true
+use Rack::CommonLogger, file
+
 use Rack::ShowExceptions
 
 # Serve .js files from .coffee files dynamically
