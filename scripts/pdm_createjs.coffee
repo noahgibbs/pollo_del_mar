@@ -14,26 +14,21 @@
 # on_cjs_tick - a callback for each createjs tick on the stage
 
 class PDM.CreatejsDisplay extends PDM.Display
+  constructor: (@pdm) ->
+  setup: () ->
+    # New displayCanvas, new stage
+    @stage = new createjs.Stage "displayCanvas"
+    @overlay_container = new createjs.Container
+  message: (msgName, argArray) ->
+    console.log "Processing display message: #{msgName}, args: #{argArray}"
 
 class PDM.CreatejsDisplay.Sprite
 
 Sprite = PDM.CreatejsDisplay.Sprite
 
-Sprite.init_graphics = () ->
-  # Help clear out the old stage and keep it from
-  # consuming resources.
-  if window.stage
-    window.stage.removeAllChildren()
-
-  # New displayCanvas, new stage
-  window.stage = new createjs.Stage "displayCanvas"
-
-  window.overlay_container = new createjs.Container
-  stage = window.stage
-
 loader_images = []
 already_loaded = false
-window.Sprite.load_images = (images, handler = undefined) ->
+Sprite.load_images = (images, handler = undefined) ->
   return if already_loaded
   already_loaded = true
   $("#loader")[0].className = "loader"

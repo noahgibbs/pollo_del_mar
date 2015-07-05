@@ -21,9 +21,12 @@
       return;
     }
 
-    window.display = new PDM.CreatejsDisplay()
+    window.pdm_game = new PDM();
     ws = new WebSocket("ws://localhost:3001/");
-    window.transport = new PDM.WebsocketTransport(ws)
+    pdm_game.setTransport("websocket", ws);
+    pdm_game.setDisplay("createjs");
+
+    pdm_game.setup();
   });
 
 //]]>

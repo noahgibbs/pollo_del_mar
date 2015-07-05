@@ -4,12 +4,15 @@ send_api_message = (ws, msg_name, args) ->
   ws.send msg_data
 
 api_handler = (ws, msg_type, args) ->
-  console.log "API msg: #{msg_type}", args
+  console.log "Handling game msg: #{msg_type}", args
   if msg_type == "start"
     send_api_message ws, "login", ["a", "b", "c"]
 
 class PDM.WebsocketTransport extends PDM.Transport
-  constructor: (@ws) ->
+  constructor: (@pdm, @ws) ->
+
+  setup: () ->
+    ws = @ws
     ws.onmessage = (evt) ->
       console.log "message received"
       data = JSON.parse evt.data
