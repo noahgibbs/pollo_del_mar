@@ -11,8 +11,8 @@ def websocket_handler(env)
   end
 
   ws.on :message do |event|
-    puts "Echo server got message!"
-    ws.send(event.data)
+    data = MultiJson.load event.data
+    puts "Got message: #{data.inspect}"
   end
 
   ws.on :error do |event|

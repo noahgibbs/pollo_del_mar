@@ -1,15 +1,22 @@
-api_handler = (msg_type, args) ->
+send_api_message = (ws, msg_name, args) ->
+  # Serialize as JSON, send
+  msg_data = JSON.stringify([ "game_msg", msg_name, args ])
+  ws.send msg_data
+
+api_handler = (ws, msg_type, args) ->
   console.log "API msg: #{msg_type}", args
+  if msg_type == "start"
+    send_api_message ws, "login", ["a", "b", "c"]
 
 window.setup_websocket_handler = (ws) ->
   ws.onmessage = (evt) ->
     console.log "message received"
-    data = eval "(#{evt.data})"
+    data = JSON.parse evt.data
     if data[0] != "game_msg"
       console.log "Unexpected message type: #{data[0]}"
       return
 
-    api_handler data[1], data.slice(2)
+    api_handler ws, data[1], data.slice(2)
 
   ws.onclose = () ->
     console.log "socket closed"
