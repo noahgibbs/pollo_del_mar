@@ -6,8 +6,8 @@ $LOAD_PATH.push __dir__
 require "lib/websocket"
 require "lib/http"
 
-# Log synchronously to log.txt in this dir
-file = File.new File.join(__dir__, "log.txt"), "a+"
+# Log synchronously to log/puma_master.txt
+file = File.new File.join(__dir__, "log", "puma_master.txt"), "a+"
 file.sync = true
 use Rack::CommonLogger, file
 
@@ -26,6 +26,10 @@ def combined_handler
       http_handler env
     end
   end
+end
+
+EM.error_handler do |e|
+  STDERR.puts "ERROR: #{e.message}\n#{e.backtrace.join "\n"}\n"
 end
 
 run combined_handler

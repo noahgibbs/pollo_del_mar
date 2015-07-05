@@ -37,6 +37,7 @@ PLATFORMS
 
 DEPENDENCIES
   faye-websocket
+  multi_json
   puma
   rack-coffee
   therubyracer
