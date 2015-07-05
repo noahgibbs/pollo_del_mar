@@ -5,7 +5,9 @@
 
   <script src="https://code.createjs.com/createjs-2015.05.21.min.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-  <script src="/script/websocket.js"></script>
+  <script src="/scripts/pdm.js"></script>
+  <script src="/scripts/pdm_websocket.js"></script>
+  <script src="/scripts/pdm_createjs.js"></script>
 
 </head>
 <body>
@@ -19,8 +21,9 @@
       return;
     }
 
+    window.display = new PDM.CreatejsDisplay()
     ws = new WebSocket("ws://localhost:3001/");
-    window.setup_websocket_handler(ws);
+    window.transport = new PDM.WebsocketTransport(ws)
   });
 
 //]]>
