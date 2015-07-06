@@ -13,48 +13,29 @@
 # on_cjs_init - a callback prior to createjs ticks on the stage
 # on_cjs_tick - a callback for each createjs tick on the stage
 
+messageMap = {
+  "displayNewSpriteSheet": "newSpriteSheet",
+}
+
 class PDM.CreatejsDisplay extends PDM.Display
   constructor: (@pdm) ->
+    @spritesheets = {}
   setup: () ->
     # New displayCanvas, new stage
     @stage = new createjs.Stage "displayCanvas"
     @overlay_container = new createjs.Container
+    @stage.addChild(window.overlay_container)
+    createjs.Ticker.timingMode = createjs.Ticker.RAF
+
   message: (msgName, argArray) ->
-    console.log "Processing display message: #{msgName}, args: #{argArray}"
+    console.log "Processing display message: #{msgName}, args:", argArray
+    handler = messageMap[msgName]
+    unless handler?
+      console.warn "Couldn't handle message type #{msgName}!"
+      return
+    this[handler](argArray...)
 
-class PDM.CreatejsDisplay.Sprite
-
-Sprite = PDM.CreatejsDisplay.Sprite
-
-loader_images = []
-already_loaded = false
-Sprite.load_images = (images, handler = undefined) ->
-  return if already_loaded
-  already_loaded = true
-  $("#loader")[0].className = "loader"
-  loader_images.concat images
-
-  manifest = []
-  for image in images
-    manifest.push src: image, id: image
-
-  loader = new createjs.LoadQueue(false)
-  loader.addEventListener "complete", handleSpritesLoaded
-  loader.addEventListener "complete", handler if handler?
-  loader.loadManifest manifest
-  window.loader = loader
-
-handleSpritesLoaded = () ->
-  $("#loader")[0].className = ""
-
-  # Make sure overlay container is displayed on top
-  window.stage.addChild(window.overlay_container)
-
-  createjs.Ticker.timingMode = createjs.Ticker.RAF
-  #createjs.Ticker.removeEventListener("tick", tick);  # If present
-  #createjs.Ticker.addEventListener("tick", tick)
-
-#tick = (event) ->
-#  if window.on_cjs_tick
-#    window.on_cjs_tick(event)
-#  window.stage.update(event)
+  newSpriteSheet: (data) ->
+    console.log "New sprite sheet!", data
+    ss = new createjs.SpriteSheet frames: { width: 32, height: 32 }, images: [ "/tiles/terrain.png" ]
+    @spritesheets[data.name] = ss

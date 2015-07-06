@@ -16,9 +16,21 @@ class window.PDM
   getTransport: () -> @transport
   getDisplay: () -> @display
   setup: (options = {}) ->
-    @transport.setHandler gotTransportCall
+    pdm_obj = this
+    @transport.setHandler (msgName, args) -> pdm_obj.gotTransportCall(msgName, args)
     @transport.setup()
     @display.setup()
+
+  gotTransportCall: (msgName, args) ->
+    if msgName == "start"
+      console.log "Got start message! Yay!"
+      return
+
+    if msgName.slice(0, 7) == "display"
+      return @getDisplay().message(msgName, args)
+
+    console.warn "Unknown message name: #{msgName}, args: #{args}"
+
 
 # This is the parent class of Transport implementations for PDM.
 # Transports like Ajax, WebSockets, and record/playback would
@@ -28,21 +40,14 @@ class PDM.Transport
   setup: () ->
 
   # Accepts a function like: transportHandler(apiCallName, argArray)
+  # This handler is called by the Transport when a message is received from
+  # the server
   setHandler: (@handler) ->
 
+  sendMessage: (msgName, args...) ->
 
 # This is the parent class of Display implementations for PDM.
 class PDM.Display
   constructor: (@pdm) ->
   setup: () ->
   message: (messageType, argArray) ->
-
-
-gotTransportCall = (msgName, args) ->
-  if msgName == "login"
-    console.log "Got login message! Yay!"
-
-  if msgName.slice(0, 7) == "display"
-    PDM.getDisplay().message(msgName, args)
-
-  console.warning "Unknown message name: #{msgName}, args: #{args}"
