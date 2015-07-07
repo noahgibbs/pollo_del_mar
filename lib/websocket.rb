@@ -1,5 +1,5 @@
 TEST_SPRITESHEET = {
-  "name" => "test_tileset",
+  "name" => "test_spritesheet",
   "tile_width" => 32,
   "tile_height" => 32,
   "properties" => {},
@@ -14,19 +14,19 @@ TEST_SPRITESHEET = {
 }
 
 TEST_SPRITESTACK = {
-  "name" => "",
+  "name" => "test_spritestack",
   "width" => 3,
   "height" => 3,
   "tilewidth" => 32,
   "tileheight" => 32,
-  "spritesheet" => TEST_SPRITESHEET,
+  "spritesheet" => "test_spritesheet",
   "layers" => [
     {
       "name" => "Ground",
       "data" => [ [1, 3, 1], [3, 1, 3], [1, 3, 1] ],
       "visible" => true,
       "opacity" => 1.0,
-      # width, height?
+      # width, height? Nope.
     },
     {
       "name" => "Fringe",
@@ -51,6 +51,7 @@ def websocket_handler(env)
     puts "Server open"
     ws.send websocket_game_message("start")
     ws.send websocket_game_message("displayNewSpriteSheet", TEST_SPRITESHEET)
+    ws.send websocket_game_message("displayNewSpriteStack", TEST_SPRITESTACK)
   end
 
   ws.on :message do |event|
