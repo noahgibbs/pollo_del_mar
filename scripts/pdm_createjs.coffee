@@ -28,6 +28,8 @@ class PDM.CreatejsDisplay extends PDM.Display
     @overlay_container = new createjs.Container
     @stage.addChild(window.overlay_container)
     createjs.Ticker.timingMode = createjs.Ticker.RAF
+    createjs.Ticker.addEventListener "tick", (event) =>
+      @stage.update event
 
   message: (msgName, argArray) ->
     handler = messageMap[msgName]
