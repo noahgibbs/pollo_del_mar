@@ -16,7 +16,7 @@ use Rack::ShowExceptions
 # Serve .js files from .coffee files dynamically
 use Rack::Coffee, :urls => ""
 
-#use Rack::Static, :root => "public", :urls => ["/public"]
+use Rack::Static, :urls => ["/tiles"]
 
 def combined_handler
   Proc.new do |env|
