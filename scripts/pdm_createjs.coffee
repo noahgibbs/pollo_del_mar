@@ -1,18 +1,3 @@
-# Variables this library adds to window:
-#
-# init_graphics - a callback to set up createjs stuff
-# stage - a createjs stage
-# overlay_container - a container for stuff above the humanoid sprite layer
-# loader - a createjs image preload queue
-# terrain_tilesheet - a tilesheet for the terrain layer
-#
-# Variables expected in window, sometimes optional:
-#
-# humanoids - see humanoids.js.coffee
-# Variables for terrains, see tilesheets.js.coffee
-# on_cjs_init - a callback prior to createjs ticks on the stage
-# on_cjs_tick - a callback for each createjs tick on the stage
-
 messageMap = {
   "displayNewSpriteSheet": "newSpriteSheet",
   "displayNewSpriteStack": "newSpriteStack",
@@ -39,11 +24,11 @@ class PDM.CreatejsDisplay extends PDM.Display
     this[handler](argArray...)
 
   newSpriteSheet: (data) ->
-    ss = new createjs.SpriteSheet frames: { width: 32, height: 32 }, images: [ "/tiles/terrain.png" ]
+    images = (imgdata.image for imgdata in data.images)
+    ss = new createjs.SpriteSheet frames: { width: data.tilewidth, height: data.tileheight }, images: images
     @spritesheets[data.name] = ss
 
   newSpriteStack: (data) ->
-    console.log "New sprite stack!", data
     sheet = @spritesheets[data["spritesheet"]]
     unless sheet?
       console.warn "Can't find spritesheet #{data["spritesheet"]} for sprite #{data["name"]}!"
@@ -55,6 +40,7 @@ class PDM.CreatejsDisplay extends PDM.Display
 
       sprites = []
       container = new createjs.Container
+      container.setTransform(data["x"] || 0, data["y"] || 0)
       container.alpha = layer.opacity
       @stage.addChild container
 
