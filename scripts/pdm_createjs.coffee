@@ -26,9 +26,7 @@ class PDM.CreatejsDisplay extends PDM.Display
 
   newSpriteSheet: (data) ->
     images = (imgdata.image for imgdata in data.images)
-    # TODO: map animations to correct tile numbers w/ GIDs/offsets
-    ss = new createjs.SpriteSheet frames: { width: data.tilewidth, height: data.tileheight }, images: images, animations: data.animations
-    @spritesheets[data.name] = ss
+    @spritesheets[data.name] = new CreatejsSpriteSheet(data.tilewidth, data.tileheight, images, data.animations)
 
   newSpriteStack: (data) ->
     sheet = @spritesheets[data["spritesheet"]]
@@ -62,7 +60,7 @@ class PDM.CreatejsDisplay extends PDM.Display
         }
         for w in [0..(data.width - 1)]
           unless ld[h][w] is 0
-            sprites[h][w] = new createjs.Sprite(sheet)
+            sprites[h][w] = sheet.create_sprite()
             sprites[h][w].setTransform(w * data.tilewidth, h * data.tileheight)
             # TODO: FIX HARDCODING OF GID TO ONE IMAGE!
             sprites[h][w].gotoAndStop(ld[h][w] - 1)
@@ -74,3 +72,10 @@ class PDM.CreatejsDisplay extends PDM.Display
     sprite = layer.sprites[data["h"]][data["w"]]
 
     sprite.gotoAndPlay data["anim"]
+
+class CreatejsSpriteSheet
+  constructor: (tilewidth, tileheight, images, animations) ->
+    @sheet = new createjs.SpriteSheet frames: { width: tilewidth, height:  tileheight }, images: images, animations: animations
+
+  create_sprite: () ->
+    new createjs.Sprite(@sheet)
