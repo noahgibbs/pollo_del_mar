@@ -137,6 +137,7 @@ def websocket_handler(env)
     ws.send websocket_game_message("displayNewSpriteSheet", TEST_HUM_SPRITESHEET)
     ws.send websocket_game_message("displayNewSpriteStack", TEST_HUMANOID)
     ws.send websocket_game_message("displayStartAnimation", TEST_ANIM)
+    ws.send websocket_game_message("displayMoveStackTo", "test_humanoid_stack", 3, 3, "duration" => 3.0)
   end
 
   ws.on :message do |event|

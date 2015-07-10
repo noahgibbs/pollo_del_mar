@@ -2,6 +2,7 @@ messageMap = {
   "displayNewSpriteSheet": "newSpriteSheet",
   "displayNewSpriteStack": "newSpriteStack",
   "displayStartAnimation": "startAnimation",
+  "displayMoveStackTo": "moveStackTo",
 }
 
 class PDM.CreatejsDisplay extends PDM.Display
@@ -43,9 +44,13 @@ class PDM.CreatejsDisplay extends PDM.Display
     stack = @spritestacks[data.stack]
     stack.animateTile data.layer, data.h, data.w, data.anim
 
+  moveStackTo: (stack, x, y, options) ->
+    stack = @spritestacks[stack]
+    stack.moveTo x, y, duration: options.duration || 1.0
+
 class CreatejsSpriteSheet
-  constructor: (tilewidth, tileheight, images, animations) ->
-    @sheet = new createjs.SpriteSheet frames: { width: tilewidth, height:  tileheight }, images: images, animations: animations
+  constructor: (@tilewidth, @tileheight, @images, @animations) ->
+    @sheet = new createjs.SpriteSheet frames: { width: @tilewidth, height:  @tileheight }, images: @images, animations: @animations
 
   create_sprite: () ->
     new createjs.Sprite(@sheet)
@@ -56,6 +61,8 @@ class CreatejsSpriteStack
     @layers = {}
     @layer_order = []
     @sheet = spritesheet
+    @width = data.width
+    @height = data.height
 
     for layer in data.layers
       continue unless layer.visible
@@ -90,3 +97,13 @@ class CreatejsSpriteStack
     layer = @layers[layer]
     sprite = layer.sprites[h][w]
     sprite.gotoAndPlay anim
+
+  moveTo: (x, y, opts) ->
+    new_x = x * @sheet.tilewidth
+    new_y = y * @sheet.tileheight
+    duration = opts.duration || 1.0
+    createjs.Tween.get(@top_container)
+      .to({x: new_x, y: new_y}, duration * 1000.0, createjs.Ease.linear)
+      .call (tween) =>  # on complete, set new @x and @y
+        @x = x
+        @y = y
