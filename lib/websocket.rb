@@ -17,8 +17,6 @@ TEST_SPRITESTACK = {
   "name" => "test_spritestack",
   "width" => 3,
   "height" => 3,
-  "tilewidth" => 32,
-  "tileheight" => 32,
   "spritesheet" => "test_spritesheet",
   "layers" => [
     {
@@ -99,8 +97,6 @@ TEST_HUMANOID = {
   "name" => "test_humanoid_stack",
   "width" => 1,
   "height" => 1,
-  "tilewidth" => 64,
-  "tileheight" => 64,
   #"x" => 0,
   #"y" => 32 * 3,
   "spritesheet" => "test_humanoid_spritesheet",

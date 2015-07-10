@@ -25,15 +25,43 @@ class PDM.CreatejsDisplay extends PDM.Display
       return
     this[handler](argArray...)
 
+  # This method takes the following keys to its argument:
+  #    name: the spritesheet name
+  #    images: an array of images
+  #    tilewidth: the width of each tile
+  #    tileheight: the height of each tile
+  #    animations: an object of animation names mapped to PDM animation specs (see animate methods)
+  #
+  # Here's an example:
+  # {
+  #   "name" => "test_humanoid_spritesheet",
+  #   "tilewidth" => 64,
+  #   "tileheight" => 64,
+  #   "animations" => { "stand" => 1, "sit" => [2, 5], "jumpsit" => [6, 9, "sit", 200], "kersquibble" => {} },
+  #   "images" => [
+  #     {
+  #       "firstgid" => 1,
+  #       "image" => "/sprites/skeleton_walkcycle.png",
+  #       "image_width" => 576,
+  #       "image_height" => 256
+  #     }
+  # }
+  #
   newSpriteSheet: (data) ->
     images = (imgdata.image for imgdata in data.images)
     # TODO: translate animations
     @spritesheets[data.name] = new CreatejsSpriteSheet(data.tilewidth, data.tileheight, images, data.animations)
 
+  # Keys in data arg:
+  #     name: name of spritestack
+  #     spritesheet: name of spritesheet
+  #     width:
+  #     height:
+  #     layers: { name: "", visible: true, opacity: 1.0, data: [ [1, 2, 3], [4, 5, 6], [7, 8, 9] ] }
   newSpriteStack: (data) ->
-    sheet = @spritesheets[data["spritesheet"]]
+    sheet = @spritesheets[data.spritesheet]
     unless sheet?
-      console.warn "Can't find spritesheet #{data["spritesheet"]} for sprite #{data["name"]}!"
+      console.warn "Can't find spritesheet #{data.spritesheet} for sprite #{data.name}!"
       return
 
     stack = new CreatejsSpriteStack(sheet, data)
@@ -85,13 +113,15 @@ class CreatejsSpriteStack
         for w in [0..(data.width - 1)]
           unless ld[h][w] is 0
             sprites[h][w] = @sheet.create_sprite()
-            sprites[h][w].setTransform(w * data.tilewidth, h * data.tileheight)
+            sprites[h][w].setTransform(w * @sheet.tilewidth, h * @sheet.tileheight)
             # TODO: FIX HARDCODING OF GID TO ONE IMAGE!
             sprites[h][w].gotoAndStop(ld[h][w] - 1)
             container.addChild sprites[h][w]
 
   addToStage: (stage) ->
     stage.addChild @top_container
+
+  ss_frame_to_cjs_frame: (ss_frame) ->
 
   animateTile: (layer, h, w, anim) ->
     layer = @layers[layer]
