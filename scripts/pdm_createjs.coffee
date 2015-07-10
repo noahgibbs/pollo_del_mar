@@ -26,6 +26,7 @@ class PDM.CreatejsDisplay extends PDM.Display
 
   newSpriteSheet: (data) ->
     images = (imgdata.image for imgdata in data.images)
+    # TODO: translate animations
     @spritesheets[data.name] = new CreatejsSpriteSheet(data.tilewidth, data.tileheight, images, data.animations)
 
   newSpriteStack: (data) ->
@@ -34,44 +35,13 @@ class PDM.CreatejsDisplay extends PDM.Display
       console.warn "Can't find spritesheet #{data["spritesheet"]} for sprite #{data["name"]}!"
       return
 
-    top_container = new createjs.Container
-    @stage.addChild top_container
-    ss_layers = {}
-    @spritestacks[data["name"]] = {
-      "container": top_container,
-      "data": data,
-      layers: ss_layers
-    }
-
-    for layer in data["layers"]
-      continue unless layer["visible"]
-
-      sprites = []
-      container = new createjs.Container
-      container.setTransform(data["x"] || 0, data["y"] || 0)
-      container.alpha = layer.opacity
-      top_container.addChild container
-
-      ld = layer.data
-      for h in [0..(data.height - 1)]
-        sprites[h] = []
-        ss_layers[layer.name] = {
-          "sprites": sprites
-        }
-        for w in [0..(data.width - 1)]
-          unless ld[h][w] is 0
-            sprites[h][w] = sheet.create_sprite()
-            sprites[h][w].setTransform(w * data.tilewidth, h * data.tileheight)
-            # TODO: FIX HARDCODING OF GID TO ONE IMAGE!
-            sprites[h][w].gotoAndStop(ld[h][w] - 1)
-            container.addChild sprites[h][w]
+    stack = new CreatejsSpriteStack(sheet, data)
+    @spritestacks[data.name] = stack
+    stack.addToStage(@stage)
 
   startAnimation: (data) ->
-    stack = @spritestacks[data["stack"]]
-    layer = stack.layers[data["layer"]]
-    sprite = layer.sprites[data["h"]][data["w"]]
-
-    sprite.gotoAndPlay data["anim"]
+    stack = @spritestacks[data.stack]
+    stack.animateTile data.layer, data.h, data.w, data.anim
 
 class CreatejsSpriteSheet
   constructor: (tilewidth, tileheight, images, animations) ->
@@ -79,3 +49,44 @@ class CreatejsSpriteSheet
 
   create_sprite: () ->
     new createjs.Sprite(@sheet)
+
+class CreatejsSpriteStack
+  constructor: (spritesheet, data) ->
+    @top_container = new createjs.Container
+    @layers = {}
+    @layer_order = []
+    @sheet = spritesheet
+
+    for layer in data.layers
+      continue unless layer.visible
+
+      @layer_order.push layer.name
+
+      container = new createjs.Container
+      container.setTransform(data.x || 0, data.y || 0)
+      container.alpha = layer.opacity
+      @top_container.addChild container
+
+      sprites = []
+      @layers[layer.name] = {
+        "sprites": sprites
+      }
+
+      ld = layer.data
+      for h in [0..(data.height - 1)]
+        sprites[h] = []
+        for w in [0..(data.width - 1)]
+          unless ld[h][w] is 0
+            sprites[h][w] = @sheet.create_sprite()
+            sprites[h][w].setTransform(w * data.tilewidth, h * data.tileheight)
+            # TODO: FIX HARDCODING OF GID TO ONE IMAGE!
+            sprites[h][w].gotoAndStop(ld[h][w] - 1)
+            container.addChild sprites[h][w]
+
+  addToStage: (stage) ->
+    stage.addChild @top_container
+
+  animateTile: (layer, h, w, anim) ->
+    layer = @layers[layer]
+    sprite = layer.sprites[h][w]
+    sprite.gotoAndPlay anim
