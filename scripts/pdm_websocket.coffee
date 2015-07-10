@@ -10,7 +10,6 @@ class PDM.WebsocketTransport extends PDM.Transport
     transport = this
     ws.onmessage = (evt) ->
       data = JSON.parse evt.data
-      console.log "message received", data
       if data[0] != "game_msg"
         return console.log "Unexpected message type: #{data[0]}"
 

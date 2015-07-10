@@ -1,6 +1,7 @@
 messageMap = {
   "displayNewSpriteSheet": "newSpriteSheet",
   "displayNewSpriteStack": "newSpriteStack",
+  "displayStartAnimation": "startAnimation",
 }
 
 class PDM.CreatejsDisplay extends PDM.Display
@@ -25,7 +26,8 @@ class PDM.CreatejsDisplay extends PDM.Display
 
   newSpriteSheet: (data) ->
     images = (imgdata.image for imgdata in data.images)
-    ss = new createjs.SpriteSheet frames: { width: data.tilewidth, height: data.tileheight }, images: images
+    # TODO: map animations to correct tile numbers w/ GIDs/offsets
+    ss = new createjs.SpriteSheet frames: { width: data.tilewidth, height: data.tileheight }, images: images, animations: data.animations
     @spritesheets[data.name] = ss
 
   newSpriteStack: (data) ->
@@ -34,19 +36,30 @@ class PDM.CreatejsDisplay extends PDM.Display
       console.warn "Can't find spritesheet #{data["spritesheet"]} for sprite #{data["name"]}!"
       return
 
+    top_container = new createjs.Container
+    @stage.addChild top_container
+    ss_layers = {}
+    @spritestacks[data["name"]] = {
+      "container": top_container,
+      "data": data,
+      layers: ss_layers
+    }
+
     for layer in data["layers"]
-      console.log "Layer:", layer.name
       continue unless layer["visible"]
 
       sprites = []
       container = new createjs.Container
       container.setTransform(data["x"] || 0, data["y"] || 0)
       container.alpha = layer.opacity
-      @stage.addChild container
+      top_container.addChild container
 
       ld = layer.data
       for h in [0..(data.height - 1)]
         sprites[h] = []
+        ss_layers[layer.name] = {
+          "sprites": sprites
+        }
         for w in [0..(data.width - 1)]
           unless ld[h][w] is 0
             sprites[h][w] = new createjs.Sprite(sheet)
@@ -54,3 +67,10 @@ class PDM.CreatejsDisplay extends PDM.Display
             # TODO: FIX HARDCODING OF GID TO ONE IMAGE!
             sprites[h][w].gotoAndStop(ld[h][w] - 1)
             container.addChild sprites[h][w]
+
+  startAnimation: (data) ->
+    stack = @spritestacks[data["stack"]]
+    layer = stack.layers[data["layer"]]
+    sprite = layer.sprites[data["h"]][data["w"]]
+
+    sprite.gotoAndPlay data["anim"]

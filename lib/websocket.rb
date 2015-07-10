@@ -48,7 +48,7 @@ HUMANOID_DEFAULT_ANIMATIONS = {
   "stand_down" => [19],
   "walk_down" => [20, 27],
   "stand_right" => [28],
-  "walk_right" => [29, 36],
+  "walk_right" => [29, 36, "walk_right", 0.25],
   "hurt" => [37, 42, "hurt", 0.25],
   "slash_up" => [43, 48],
   "slash_left" => [49, 54],
@@ -65,6 +65,7 @@ TEST_HUM_SPRITESHEET = {
   "tilewidth" => 64,
   "tileheight" => 64,
   "properties" => {},
+  "animations" => HUMANOID_DEFAULT_ANIMATIONS,
   "images" => [
     {
       "firstgid" => 1,
@@ -113,6 +114,14 @@ TEST_HUMANOID = {
   ],
 }
 
+TEST_ANIM = {
+  "stack" => "test_humanoid_stack",
+  "layer" => "Body",
+  "w" => 0,
+  "h" => 0,
+  "anim" => "walk_right"
+}
+
 def websocket_game_message(msg_name, *args)
   MultiJson.dump ["game_msg", msg_name, *args]
 end
@@ -127,6 +136,7 @@ def websocket_handler(env)
     ws.send websocket_game_message("displayNewSpriteStack", TEST_SPRITESTACK)
     ws.send websocket_game_message("displayNewSpriteSheet", TEST_HUM_SPRITESHEET)
     ws.send websocket_game_message("displayNewSpriteStack", TEST_HUMANOID)
+    ws.send websocket_game_message("displayStartAnimation", TEST_ANIM)
   end
 
   ws.on :message do |event|
