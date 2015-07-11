@@ -1,3 +1,5 @@
+# pdm_createjs.coffee
+
 messageMap = {
   "displayNewSpriteSheet": "newSpriteSheet",
   "displayNewSpriteStack": "newSpriteStack",
@@ -17,6 +19,16 @@ class PDM.CreatejsDisplay extends PDM.Display
     createjs.Ticker.timingMode = createjs.Ticker.RAF
     createjs.Ticker.addEventListener "tick", (event) =>
       @stage.update event
+
+  # Figure out how to expose CreateJS events:
+  #   complete  (everything complete)
+  #   error     (error while loading)
+  #   progress  (total queue progress)
+  #   fileload  (one file loaded)
+  #   fileprogress  (progress in single file)
+  on_load_update: (handler) ->
+    @load_handler = handler
+    PDM.CreatejsDisplay.loader.setHandler handler
 
   message: (msgName, argArray) ->
     handler = messageMap[msgName]
@@ -50,7 +62,7 @@ class PDM.CreatejsDisplay extends PDM.Display
   newSpriteSheet: (data) ->
     images = (imgdata.image for imgdata in data.images)
     # TODO: translate animations
-    @spritesheets[data.name] = new CreatejsSpriteSheet(data.tilewidth, data.tileheight, images, data.animations)
+    @spritesheets[data.name] = new PDM.CreatejsDisplay.CreatejsSpriteSheet(data.tilewidth, data.tileheight, images, data.animations)
 
   # Keys in data arg:
   #     name: name of spritestack
@@ -64,7 +76,7 @@ class PDM.CreatejsDisplay extends PDM.Display
       console.warn "Can't find spritesheet #{data.spritesheet} for sprite #{data.name}!"
       return
 
-    stack = new CreatejsSpriteStack(sheet, data)
+    stack = new PDM.CreatejsDisplay.CreatejsSpriteStack(sheet, data)
     @spritestacks[data.name] = stack
     stack.addToStage(@stage)
 
@@ -76,64 +88,3 @@ class PDM.CreatejsDisplay extends PDM.Display
     stack = @spritestacks[stack]
     stack.moveTo x, y, duration: options.duration || 1.0
 
-class CreatejsSpriteSheet
-  constructor: (@tilewidth, @tileheight, @images, @animations) ->
-    @sheet = new createjs.SpriteSheet frames: { width: @tilewidth, height:  @tileheight }, images: @images, animations: @animations
-
-  create_sprite: () ->
-    new createjs.Sprite(@sheet)
-
-class CreatejsSpriteStack
-  constructor: (spritesheet, data) ->
-    @top_container = new createjs.Container
-    @layers = {}
-    @layer_order = []
-    @sheet = spritesheet
-    @width = data.width
-    @height = data.height
-
-    for layer in data.layers
-      continue unless layer.visible
-
-      @layer_order.push layer.name
-
-      container = new createjs.Container
-      container.setTransform(data.x || 0, data.y || 0)
-      container.alpha = layer.opacity
-      @top_container.addChild container
-
-      sprites = []
-      @layers[layer.name] = {
-        "sprites": sprites
-      }
-
-      ld = layer.data
-      for h in [0..(data.height - 1)]
-        sprites[h] = []
-        for w in [0..(data.width - 1)]
-          unless ld[h][w] is 0
-            sprites[h][w] = @sheet.create_sprite()
-            sprites[h][w].setTransform(w * @sheet.tilewidth, h * @sheet.tileheight)
-            # TODO: FIX HARDCODING OF GID TO ONE IMAGE!
-            sprites[h][w].gotoAndStop(ld[h][w] - 1)
-            container.addChild sprites[h][w]
-
-  addToStage: (stage) ->
-    stage.addChild @top_container
-
-  ss_frame_to_cjs_frame: (ss_frame) ->
-
-  animateTile: (layer, h, w, anim) ->
-    layer = @layers[layer]
-    sprite = layer.sprites[h][w]
-    sprite.gotoAndPlay anim
-
-  moveTo: (x, y, opts) ->
-    new_x = x * @sheet.tilewidth
-    new_y = y * @sheet.tileheight
-    duration = opts.duration || 1.0
-    createjs.Tween.get(@top_container)
-      .to({x: new_x, y: new_y}, duration * 1000.0, createjs.Ease.linear)
-      .call (tween) =>  # on complete, set new @x and @y
-        @x = x
-        @y = y
