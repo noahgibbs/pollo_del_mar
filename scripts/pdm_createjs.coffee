@@ -30,6 +30,10 @@ class PDM.CreatejsDisplay extends PDM.Display
     @load_handler = handler
     PDM.CreatejsDisplay.loader.setHandler handler
 
+  # TODO: tie this in neatly w/ on_load_update,
+  # map events properly, document them
+  addEventListener: (event, handler) ->
+
   message: (msgName, argArray) ->
     handler = messageMap[msgName]
     unless handler?
@@ -60,9 +64,7 @@ class PDM.CreatejsDisplay extends PDM.Display
   # }
   #
   newSpriteSheet: (data) ->
-    images = (imgdata.image for imgdata in data.images)
-    # TODO: translate animations
-    @spritesheets[data.name] = new PDM.CreatejsDisplay.CreatejsSpriteSheet(data.tilewidth, data.tileheight, images, data.animations)
+    @spritesheets[data.name] = new PDM.CreatejsDisplay.CreatejsSpriteSheet(data.tilewidth, data.tileheight, data.images, data.animations)
 
   # Keys in data arg:
   #     name: name of spritestack

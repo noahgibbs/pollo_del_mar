@@ -8,6 +8,7 @@ loader.init = () ->
   # TODO: for lots of loading, see if multi-connection XHR is better/faster
   loader.queue = new createjs.LoadQueue(false)  # False to recommend tag (DOM) loading rather than XHR
   loader.queue.addEventListener "complete", loader.imagesLoaded
+  loader.queue.addEventListener "error", loader.errorLoadingImages
   loader.initialized = true
 
 loader.addHandler = (handler) ->
@@ -20,10 +21,16 @@ loader.removeHandler = (handler) ->
 loader.imagesLoaded = () ->
   handler() for handler in loader.handlers
 
+loader.errorLoadingImages = () ->
+  console.error "LOADER: Couldn't load all images!"
+
 loader.addImages = (images...) ->
   loader.init()
   for image in images
     if image.length?
-      loader.queue.loadFile(img) for img in image
+      loader.queue.loadFile(src: img, id: img) for img in image
     else
       loader.queue.loadFile(image)
+
+loader.getImage = (image) ->
+  loader.queue.getResult image
