@@ -1,3 +1,5 @@
+require "lib/humanoid_animation"
+
 TEST_SPRITESHEET = {
   "name" => "test_spritesheet",
   "tilewidth" => 32,
@@ -38,32 +40,12 @@ TEST_SPRITESTACK = {
   "properties": {},
 }
 
-HUMANOID_DEFAULT_ANIMATIONS = {
-  "stand_up" => [1],
-  "walk_up" => [2, 9],
-  "stand_left" => [10],
-  "walk_left" => [11, 18],
-  "stand_down" => [19],
-  "walk_down" => [20, 27],
-  "stand_right" => [28],
-  "walk_right" => [29, 36, "walk_right", 0.25],
-  "hurt" => [37, 42, "hurt", 0.25],
-  "slash_up" => [43, 48],
-  "slash_left" => [49, 54],
-  "slash_down" => [55, 60],
-  "slash_right" => [61, 66],
-  "spellcast_up" => [67, 73],
-  "spellcast_left" => [74, 80],
-  "spellcast_down" => [81, 87],
-  "spellcast_right" => [88, 94],
-}
-
 TEST_HUM_SPRITESHEET = {
   "name" => "test_humanoid_spritesheet",
   "tilewidth" => 64,
   "tileheight" => 64,
   "properties" => {},
-  "animations" => HUMANOID_DEFAULT_ANIMATIONS,
+  "animations" => animation_with_offset("body_", 1).merge(animation_with_offset("hat_", 95)),
   "images" => [
     {
       "firstgid" => 1,
@@ -89,8 +71,31 @@ TEST_HUM_SPRITESHEET = {
       "image_width" => 448,
       "image_height" => 256,
     },
+    {
+      "firstgid" => 95,
+      "image" => "/sprites/kettle_hat_male_walkcycle.png",
+      "image_width" => 576,
+      "image_height" => 256,
+    },
+    {
+      "firstgid" => 131,
+      "image" => "/sprites/kettle_hat_male_hurt.png",
+      "image_width" => 384,
+      "image_height" => 64,
+    },
+    {
+      "firstgid" => 137,
+      "image" => "/sprites/kettle_hat_male_slash.png",
+      "image_width" => 384,
+      "image_height" => 256,
+    },
+    {
+      "firstgid" => 161,
+      "image" => "/sprites/kettle_hat_male_spellcast.png",
+      "image_width" => 448,
+      "image_height" => 256,
+    },
   ],
-  "" => "",
 }
 
 TEST_HUMANOID = {
@@ -107,6 +112,12 @@ TEST_HUMANOID = {
       "visible" => true,
       "opacity" => 1.0,
     },
+    {
+      "name" => "Hat",
+      "data" => [ [179] ],
+      "visible" => true,
+      "opacity" => 1.0,
+    },
   ],
 }
 
@@ -115,7 +126,15 @@ TEST_ANIM = {
   "layer" => "Body",
   "w" => 0,
   "h" => 0,
-  "anim" => "walk_right"
+  "anim" => "body_walk_right"
+}
+
+TEST_ANIM_2 = {
+  "stack" => "test_humanoid_stack",
+  "layer" => "Hat",
+  "w" => 0,
+  "h" => 0,
+  "anim" => "hat_walk_right"
 }
 
 def websocket_game_message(msg_name, *args)
@@ -133,6 +152,7 @@ def websocket_handler(env)
     ws.send websocket_game_message("displayNewSpriteSheet", TEST_HUM_SPRITESHEET)
     ws.send websocket_game_message("displayNewSpriteStack", TEST_HUMANOID)
     ws.send websocket_game_message("displayStartAnimation", TEST_ANIM)
+    ws.send websocket_game_message("displayStartAnimation", TEST_ANIM_2)
     ws.send websocket_game_message("displayMoveStackTo", "test_humanoid_stack", 3, 3, "duration" => 3.0)
   end
 

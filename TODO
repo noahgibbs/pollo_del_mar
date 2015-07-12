@@ -18,4 +18,4 @@ Needed for More Game:
 Later Feature Ideas:
 * Image layers
 * Support more TMX features like sprite flipping
-* Add SpriteSheet extensions to allow adding new images. This allows later dynamic load.
+* Add CreateJS SpriteSheet extensions to allow adding new images. This allows later dynamic load.
