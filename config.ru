@@ -1,8 +1,10 @@
 Bundler.require :default
 
+# Faux-gem, for now
 $LOAD_PATH.push File.join(__dir__, "lib")
-
 require "pollo_del_mar"
+
+require_relative "./game.rb"
 
 # Log synchronously to log/puma_master.txt
 file = File.new File.join(__dir__, "log", "puma_master.txt"), "a+"
@@ -12,13 +14,13 @@ use Rack::CommonLogger, file
 use Rack::ShowExceptions
 
 # Serve .js files from .coffee files dynamically
-use Rack::Coffee, :urls => ""
+use Rack::Coffee, :urls => ""  # TODO: how will these be served when it's a gem?
 use Rack::Static, :urls => ["/tiles", "/sprites"]
 
 def combined_handler
   Proc.new do |env|
     if Faye::WebSocket.websocket? env
-      websocket_handler env
+      PDM.websocket_handler env
     else
       [200, {'Content-Type' => 'text/html'}, [File.read("index.html")]]
     end
