@@ -1,10 +1,8 @@
 Bundler.require :default
 
-$LOAD_PATH.push __dir__
+$LOAD_PATH.push File.join(__dir__, "lib")
 
-# Load local requires. Don't need this for Gems, we do that with Bundler.
-require "lib/websocket"
-require "lib/http"
+require "pollo_del_mar"
 
 # Log synchronously to log/puma_master.txt
 file = File.new File.join(__dir__, "log", "puma_master.txt"), "a+"
@@ -15,7 +13,6 @@ use Rack::ShowExceptions
 
 # Serve .js files from .coffee files dynamically
 use Rack::Coffee, :urls => ""
-
 use Rack::Static, :urls => ["/tiles", "/sprites"]
 
 def combined_handler
@@ -23,7 +20,7 @@ def combined_handler
     if Faye::WebSocket.websocket? env
       websocket_handler env
     else
-      http_handler env
+      [200, {'Content-Type' => 'text/html'}, [File.read("index.html")]]
     end
   end
 end

@@ -1,4 +1,45 @@
-require "lib/humanoid_animation"
+require "tmx"
+
+def pdm_from_tmx(filename)
+  out = {}
+
+  # This recursively loads things like tileset .tsx files
+  tiles = Tmx.load filename
+
+  out["width"] = tiles.width
+  out["height"] = tiles.height
+  out["tilewidth"] = tiles.tilewidth
+  out["tileheight"] = tiles.tileheight
+
+  out["tilesets"] = tiles.tilesets.map do |tileset|
+    {
+      firstgid: tileset.firstgid,
+      image: "/tiles/" + tileset.image.split("/")[-1],
+      image_width: tileset.imagewidth,
+      image_height: tileset.imageheight,
+      tile_width: tileset.tilewidth,
+      tile_height: tileset.tileheight,
+      properties: tileset.properties,
+    }
+  end
+
+  if out["tilesets"].map { |ts| ts[:tile_width] }.uniq.length > 1 ||
+     out["tilesets"].map { |ts| ts[:tile_height] }.uniq.length > 1
+    raise "Can't have more than one tilewidth or tileheight in the same SpriteSheet right now!"
+  end
+
+  out["layers"] = tiles.layers.map do |layer|
+    data = layer.data.each_slice(layer.width).to_a
+    {
+      name: layer.name,
+      data: data,
+      visible: layer.visible,
+      opacity: layer.opacity,
+      properties: layer.properties
+    }
+  end
+
+end
 
 TEST_SPRITESHEET = {
   "name" => "test_spritesheet",
@@ -136,48 +177,3 @@ TEST_ANIM_2 = {
   "h" => 0,
   "anim" => "hat_walk_right"
 }
-
-def websocket_game_message(msg_name, *args)
-  MultiJson.dump ["game_msg", msg_name, *args]
-end
-
-def websocket_handler(env)
-  ws = Faye::WebSocket.new(env)
-
-  ws.on :open do |event|
-    puts "Server open"
-    ws.send websocket_game_message("start")
-    ws.send websocket_game_message("displayNewSpriteSheet", TEST_SPRITESHEET)
-    ws.send websocket_game_message("displayNewSpriteStack", TEST_SPRITESTACK)
-    ws.send websocket_game_message("displayNewSpriteSheet", TEST_HUM_SPRITESHEET)
-    ws.send websocket_game_message("displayNewSpriteStack", TEST_HUMANOID)
-    ws.send websocket_game_message("displayStartAnimation", TEST_ANIM)
-    ws.send websocket_game_message("displayStartAnimation", TEST_ANIM_2)
-    ws.send websocket_game_message("displayMoveStackTo", "test_humanoid_stack", 3, 3, "duration" => 3.0)
-  end
-
-  ws.on :message do |event|
-    data = MultiJson.load event.data
-    puts "Got message: #{data.inspect}"
-    handle_message ws, data
-  end
-
-  ws.on :error do |event|
-    puts "Protocol error: #{event.inspect}"
-  end
-
-  ws.on :close do |event|
-    p [:close, event.code, event.reason].inspect
-    ws = nil
-  end
-
-  # Return async Rack response
-  ws.rack_response
-end
-
-def handle_message(ws, data)
-  if data[0] == "gamePing"
-    ws.send websocket_game_message("gamePong")
-  end
-  puts "Unrecognized message: #{data.inspect}!"
-end
