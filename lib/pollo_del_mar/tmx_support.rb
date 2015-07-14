@@ -49,7 +49,3 @@ class PDM
     { spritesheet: spritesheet, spritestack: spritestack }
   end
 end
-
-TEST_SPRITESTACK = {
-  "spritesheet" => "test_spritesheet",
-}
