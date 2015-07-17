@@ -27,7 +27,7 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
       @handleExposure()
 
   setExposure: (@exposure) ->
-    @handleExposure
+    @handleExposure()
 
   handleExposure: () ->
     @top_container.setTransform @x - (@exposure.x || 0), @y - (@exposure.y || 0)
