@@ -24,25 +24,48 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
 
         @layers[layer.name] = { sprites: [], container: container, data: layer.data }
 
-      @setExposure @exposure
+      @handleExposure()
 
-  setExposure: (@exposure) ->
+  handleExposure: () ->
     @top_container.setTransform @x - (@exposure.x || 0), @y - (@exposure.y || 0)
 
     height = Math.min @exposure.height, @height
     width = Math.min @exposure.width, @width
+
+    # Offsets of lowest visible tile
+    start_tile_x = parseInt((@exposure.x - @x) / @sheet.tilewidth)
+    start_tile_y = parseInt((@exposure.y - @y) / @sheet.tileheight)
+
+    if start_tile_x == @last_start_tile_x && start_tile_y == @last_start_tile_y
+      return
+    @last_start_tile_x = start_tile_x
+    @last_start_tile_y = start_tile_y
+
+    # Offsets of highest visible tile
+    end_tile_x = parseInt((@exposure.x - @x + @exposure.width + @sheet.tilewidth - 1) / @sheet.tilewidth)
+    end_tile_x = Math.min(end_tile_x, @width - 1)
+    end_tile_y = parseInt((@exposure.y - @y + @exposure.height + @sheet.tileheight - 1) / @sheet.tileheight)
+    end_tile_y = Math.min(end_tile_y, @height - 1)
+    @last_end_tile_x = end_tile_x
+    @last_end_tile_y = end_tile_y
+
+    # How many tiles high and wide might be exposed at most?
+    width_tiles = end_tile_x - start_tile_x + 1
+    height_tiles = end_tile_y - start_tile_y + 1
 
     for layer_name in @layer_order
       layer = @layers[layer_name]
       sprites = layer.sprites = []
       ld = layer.data
 
-      for h in [0..(height - 1)]
-        sprites[h] = []
-        for w in [0..(width - 1)]
-          sprite = sprites[h][w]
+      for h in [start_tile_y..end_tile_y]
+        h_ctr = h - start_tile_y
+        sprites[h_ctr] = sprites[h_ctr] || []
+        for w in [start_tile_x..end_tile_x]
+          w_ctr = w - start_tile_x
+          sprite = sprites[h_ctr][w_ctr]
           unless sprite
-            sprite = sprites[h][w] = @sheet.create_sprite()
+            sprite = sprites[h_ctr][w_ctr] = @sheet.create_sprite()
             layer.container.addChild sprite
 
           if ld[h][w] is 0
@@ -58,6 +81,8 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
   animateTile: (layer_name, h, w, anim) ->
     when_sheet_complete @sheet, () =>
       layer = @layers[layer_name]
+      return if h < @last_start_tile_y || w < @last_start_tile_x
+      return if h > @last_end_tile_y || w > @last_end_tile_x
       sprite = layer.sprites[h][w]
       sprite.gotoAndPlay(anim)
 
@@ -68,6 +93,7 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
     when_sheet_complete @sheet, () =>
       createjs.Tween.get(@top_container)
         .to({x: new_x, y: new_y}, duration * 1000.0, createjs.Ease.linear)
+        .addEventListener("change", () => @handleExposure)
         .call (tween) =>  # on complete, set new @x and @y
           @x = x
           @y = y
