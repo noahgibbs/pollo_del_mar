@@ -5,6 +5,7 @@ messageMap = {
   "displayNewSpriteStack": "newSpriteStack",
   "displayStartAnimation": "startAnimation",
   "displayMoveStackTo": "moveStackTo",
+  "displayInstantPanStackTo": "instantPanStackTo",
 }
 
 class PDM.CreatejsDisplay extends PDM.Display
@@ -95,3 +96,6 @@ class PDM.CreatejsDisplay extends PDM.Display
     stack = @spritestacks[stack]
     stack.moveTo x, y, duration: options.duration || 1.0
 
+  instantPanStackTo: (stack, x, y) ->
+    stack = @spritestacks[stack]
+    stack.setExposure x: x, y: y, width: @display_width, height: @display_height

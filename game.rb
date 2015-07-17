@@ -100,6 +100,7 @@ class GoodShip
     pdm_terrain = PDM.sprites_from_tmx File.join(__dir__, "tmx", "terrain-test.tmx")
     @terrain_spritesheet = pdm_terrain[:spritesheet]
     @terrain_spritestack = pdm_terrain[:spritestack]
+    @terrain_spritestack["name"] = "terrain-test"
   end
 
   def on_open(socket)
@@ -110,6 +111,7 @@ class GoodShip
     socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM)
     socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM_2)
     socket.send PDM.websocket_game_message("displayMoveStackTo", "test_humanoid_stack", 3, 3, "duration" => 3.0)
+    EM.add_timer 3.0, (proc { socket.send PDM.websocket_game_message("displayInstantPanStackTo", @terrain_spritestack["name"], 5, 5) })
   end
 end
 
