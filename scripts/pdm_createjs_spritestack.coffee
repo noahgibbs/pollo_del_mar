@@ -30,6 +30,10 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
     @handleExposure()
 
   handleExposure: () ->
+    @x = parseInt(@x)
+    @y = parseInt(@y)
+    @exposure.x = parseInt(@exposure.x)
+    @exposure.y = parseInt(@exposure.y)
     @top_container.setTransform @x - (@exposure.x || 0), @y - (@exposure.y || 0)
 
     height = Math.min @exposure.height, @height
