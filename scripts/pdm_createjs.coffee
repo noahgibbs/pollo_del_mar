@@ -16,6 +16,10 @@ class PDM.CreatejsDisplay extends PDM.Display
     @stage = new createjs.Stage "displayCanvas"
     @overlay_container = new createjs.Container
     @stage.addChild(window.overlay_container)
+
+    @display_width = 640
+    @display_height = 480
+
     createjs.Ticker.timingMode = createjs.Ticker.RAF
     createjs.Ticker.addEventListener "tick", (event) =>
       @stage.update event
@@ -78,7 +82,8 @@ class PDM.CreatejsDisplay extends PDM.Display
       console.warn "Can't find spritesheet #{data.spritesheet} for sprite #{data.name}!"
       return
 
-    stack = new PDM.CreatejsDisplay.CreatejsSpriteStack(sheet, data)
+    exposure = { x: 0, y: 0, width: @display_width, height: @display_height }
+    stack = new PDM.CreatejsDisplay.CreatejsSpriteStack(sheet, data, exposure)
     @spritestacks[data.name] = stack
     stack.addToStage(@stage)
 
