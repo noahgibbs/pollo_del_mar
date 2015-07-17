@@ -95,6 +95,22 @@ TEST_ANIM_2 = {
   "anim" => "hat_walk_right"
 }
 
+TEST_ANIM_3 = {
+  "stack" => "test_humanoid_stack",
+  "layer" => "Body",
+  "w" => 0,
+  "h" => 0,
+  "anim" => "body_stand_right"
+}
+
+TEST_ANIM_4 = {
+  "stack" => "test_humanoid_stack",
+  "layer" => "Hat",
+  "w" => 0,
+  "h" => 0,
+  "anim" => "hat_stand_right"
+}
+
 class GoodShip
   def initialize
     pdm_terrain = PDM.sprites_from_tmx File.join(__dir__, "tmx", "terrain-test.tmx")
@@ -111,7 +127,13 @@ class GoodShip
     socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM)
     socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM_2)
     socket.send PDM.websocket_game_message("displayMoveStackTo", "test_humanoid_stack", 3, 3, "duration" => 3.0)
-    EM.add_timer 3.0, (proc { socket.send PDM.websocket_game_message("displayInstantPanStackTo", @terrain_spritestack["name"], 5, 5) })
+    EM.add_timer(3.0) do
+      socket.send PDM.websocket_game_message("displayPanStackTo", @terrain_spritestack["name"], 500, 500, "duration" => 10.0)
+    end
+    EM.add_timer(13.0) do
+      socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM_3)
+      socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM_4)
+    end
   end
 end
 
