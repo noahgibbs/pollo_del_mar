@@ -37,7 +37,9 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
 
     # Offsets of lowest visible tile
     start_tile_x = parseInt((@exposure.x - @x) / @sheet.tilewidth)
+    start_tile_x = Math.max(start_tile_x, 0)
     start_tile_y = parseInt((@exposure.y - @y) / @sheet.tileheight)
+    start_tile_y = Math.max(start_tile_y, 0)
 
     if start_tile_x == @last_start_tile_x && start_tile_y == @last_start_tile_y
       return
@@ -94,9 +96,19 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
     new_y = y * @sheet.tileheight
     duration = opts.duration || 1.0
     when_sheet_complete @sheet, () =>
-      createjs.Tween.get(@top_container)
+      createjs.Tween.get(this)
         .to({x: new_x, y: new_y}, duration * 1000.0, createjs.Ease.linear)
-        .addEventListener("change", () => @handleExposure)
+        .addEventListener("change", () => @handleExposure())
         .call (tween) =>  # on complete, set new @x and @y
           @x = x
           @y = y
+
+  panToExposure: (new_exp_x, new_exp_y, opts) ->
+    duration = opts.duration || 1.0
+    when_sheet_complete @sheet, () =>
+      createjs.Tween.get(@exposure)
+        .to({x: new_exp_x, y: new_exp_y}, duration * 1000.0, createjs.Ease.linear)
+        .addEventListener("change", () => @handleExposure())
+        .call (tween) =>
+          @exposure.x = new_exp_x
+          @exposure.y = new_exp_y
