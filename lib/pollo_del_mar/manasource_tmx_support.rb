@@ -11,7 +11,7 @@ class PDM
     sheet = objs[:spritesheet]
     stack = objs[:spritestack]
 
-    stack_layers = stack["layers"]
+    stack_layers = stack[:layers]
 
     # Remove the collision layer, add as separate collision top-level entry
     collision_index = stack_layers.index { |l| l[:name].downcase == "collision" }

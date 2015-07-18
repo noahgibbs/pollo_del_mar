@@ -12,15 +12,15 @@ class PDM
     # This recursively loads things like tileset .tsx files
     tiles = Tmx.load filename
 
-    spritestack["name"] = tiles.name
-    spritestack["width"] = tiles.width
-    spritestack["height"] = tiles.height
-    spritestack["properties"] = tiles.properties
+    spritestack[:name] = tiles.name
+    spritestack[:width] = tiles.width
+    spritestack[:height] = tiles.height
+    spritestack[:properties] = tiles.properties
 
-    spritesheet["tilewidth"] = tiles.tilewidth
-    spritesheet["tileheight"] = tiles.tileheight
+    spritesheet[:tilewidth] = tiles.tilewidth
+    spritesheet[:tileheight] = tiles.tileheight
 
-    spritesheet["images"] = tiles.tilesets.map do |tileset|
+    spritesheet[:images] = tiles.tilesets.map do |tileset|
       {
         firstgid: tileset.firstgid,
         tileset_name: tileset.name,
@@ -30,18 +30,18 @@ class PDM
         properties: tileset.properties,
       }
     end
-    spritesheet["cyclic_animations"] = animations_from_tilesets tiles.tilesets
+    spritesheet[:cyclic_animations] = animations_from_tilesets tiles.tilesets
 
-    spritesheet["properties"] = spritesheet["images"].map { |i| i[:properties] }.inject({}, &:merge)
-    spritesheet["name"] = spritesheet["images"].map { |i| i[:tileset_name] }.join("/")
-    spritestack["spritesheet"] = spritesheet["name"]
+    spritesheet[:properties] = spritesheet[:images].map { |i| i[:properties] }.inject({}, &:merge)
+    spritesheet[:name] = spritesheet[:images].map { |i| i[:tileset_name] }.join("/")
+    spritestack[:spritesheet] = spritesheet[:name]
 
-    if spritesheet["images"].map { |ts| ts[:tile_width] }.uniq.length > 1 ||
-       spritesheet["images"].map { |ts| ts[:tile_height] }.uniq.length > 1
+    if spritesheet[:images].map { |ts| ts[:tile_width] }.uniq.length > 1 ||
+       spritesheet[:images].map { |ts| ts[:tile_height] }.uniq.length > 1
       raise "Can't have more than one tilewidth or tileheight in the same SpriteSheet right now!"
     end
 
-    spritestack["layers"] = tiles.layers.map do |layer|
+    spritestack[:layers] = tiles.layers.map do |layer|
       data = layer.data.each_slice(layer.width).to_a
       {
         name: layer.name,
@@ -58,8 +58,8 @@ class PDM
   def self.animations_from_tilesets tilesets
     tilesets.flat_map do |tileset|
       tileset.tiles.map do |tile|
-        p = tile["properties"]
-        if p && p["animation-frame0"]
+        p = tile[:properties]
+        if p && p[:animation-frame0]
           section = 0
           anim = []
           # TODO: animation delays
@@ -71,7 +71,7 @@ class PDM
             anim.push section_hash
             section += 1
           end
-          { "tile_anim_#{tile["id"]}" => anim }
+          { "tile_anim_#{tile[:id]}".to_sym => anim }
         else
           nil
         end
