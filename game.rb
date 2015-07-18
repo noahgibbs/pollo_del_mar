@@ -84,7 +84,7 @@ TEST_ANIM = {
   "layer" => "Body",
   "w" => 0,
   "h" => 0,
-  "anim" => "body_walk_right"
+  "anim" => "body_walk_left"
 }
 
 TEST_ANIM_2 = {
@@ -92,7 +92,7 @@ TEST_ANIM_2 = {
   "layer" => "Hat",
   "w" => 0,
   "h" => 0,
-  "anim" => "hat_walk_right"
+  "anim" => "hat_walk_left"
 }
 
 TEST_ANIM_3 = {
@@ -126,15 +126,15 @@ class GoodShip
   end
 
   def on_open(socket)
-    socket.send PDM.websocket_game_message("displayNewSpriteSheet", @terrain_spritesheet)
-    socket.send PDM.websocket_game_message("displayNewSpriteStack", @terrain_spritestack)
+    socket.send PDM.websocket_game_message("displayNewSpriteSheet", @boat_spritesheet)
+    socket.send PDM.websocket_game_message("displayNewSpriteStack", @boat_spritestack)
     socket.send PDM.websocket_game_message("displayNewSpriteSheet", TEST_HUM_SPRITESHEET)
     socket.send PDM.websocket_game_message("displayNewSpriteStack", TEST_HUMANOID)
     socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM)
     socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM_2)
     socket.send PDM.websocket_game_message("displayMoveStackTo", "test_humanoid_stack", 3, 3, "duration" => 3.0)
     EM.add_timer(3.0) do
-      socket.send PDM.websocket_game_message("displayPanStackTo", @terrain_spritestack["name"], 500, 500, "duration" => 10.0)
+      socket.send PDM.websocket_game_message("displayPanStackTo", @boat_spritestack["name"], 500, 500, "duration" => 10.0)
     end
     EM.add_timer(13.0) do
       socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM_3)
