@@ -72,7 +72,7 @@ class PDM
           nil
         end
       end.compact
-    end
+    end.inject({}, &:merge)
   end
 
 end
