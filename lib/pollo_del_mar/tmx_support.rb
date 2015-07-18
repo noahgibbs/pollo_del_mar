@@ -64,7 +64,7 @@ class PDM
           anim = []
           # TODO: animation delays
           while p["animation-frame#{frame}"]
-            anim.push p["animation-frame#{frame}"].to_i
+            anim.push(p["animation-frame#{frame}"].to_i + tileset[:firstgid])
             frame += 1
           end
           { "tile_anim_#{tile["id"]}" => anim }
