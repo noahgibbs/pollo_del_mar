@@ -30,7 +30,7 @@ class PDM
         properties: tileset.properties,
       }
     end
-    spritesheet["animations"] = animations_from_tilesets tiles.tilesets
+    spritesheet["cyclic_animations"] = animations_from_tilesets tiles.tilesets
 
     spritesheet["properties"] = spritesheet["images"].map { |i| i[:properties] }.inject({}, &:merge)
     spritesheet["name"] = spritesheet["images"].map { |i| i[:tileset_name] }.join("/")
@@ -60,12 +60,16 @@ class PDM
       tileset.tiles.map do |tile|
         p = tile["properties"]
         if p && p["animation-frame0"]
-          frame = 0
+          section = 0
           anim = []
           # TODO: animation delays
-          while p["animation-frame#{frame}"]
-            anim.push(p["animation-frame#{frame}"].to_i + tileset[:firstgid])
-            frame += 1
+          while p["animation-frame#{section}"]
+            section_hash = {
+              frame: p["animation-frame#{section}"].to_i + tileset[:firstgid],
+              duration: p["animation-delay#{section}"].to_i
+            }
+            anim.push section_hash
+            section += 1
           end
           { "tile_anim_#{tile["id"]}" => anim }
         else
