@@ -117,6 +117,12 @@ class GoodShip
     @terrain_spritesheet = pdm_terrain[:spritesheet]
     @terrain_spritestack = pdm_terrain[:spritestack]
     @terrain_spritestack["name"] = "terrain-test"
+
+    pdm_terrain = PDM.sprites_from_manasource_tmx File.join(__dir__, "tmx", "evol-boat.tmx")
+    @boat_spritesheet = pdm_terrain[:spritesheet]
+    @boat_spritestack = pdm_terrain[:spritestack]
+    @boat_collision = pdm_terrain[:collision]
+    @boat_spritestack["name"] = "evol-boat"
   end
 
   def on_open(socket)

@@ -1,5 +1,9 @@
 require "tmx"
 
+# TODO: terrain animations
+# TODO: object layers
+# TODO: image layers
+
 class PDM
   def self.sprites_from_tmx(filename)
     spritesheet = {}
@@ -26,6 +30,8 @@ class PDM
         properties: tileset.properties,
       }
     end
+    spritesheet["animations"] = animations_from_tilesets tiles.tilesets
+
     spritesheet["properties"] = spritesheet["images"].map { |i| i[:properties] }.inject({}, &:merge)
     spritesheet["name"] = spritesheet["images"].map { |i| i[:tileset_name] }.join("/")
     spritestack["spritesheet"] = spritesheet["name"]
@@ -48,4 +54,25 @@ class PDM
 
     { spritesheet: spritesheet, spritestack: spritestack }
   end
+
+  def self.animations_from_tilesets tilesets
+    tilesets.flat_map do |tileset|
+      tileset.tiles.map do |tile|
+        p = tile["properties"]
+        if p && p["animation-frame0"]
+          frame = 0
+          anim = []
+          # TODO: animation delays
+          while p["animation-frame#{frame}"]
+            anim.push p["animation-frame#{frame}"]
+            frame += 1
+          end
+          { "tile_anim_#{tile["id"]}" => anim }
+        else
+          nil
+        end
+      end.compact
+    end
+  end
+
 end

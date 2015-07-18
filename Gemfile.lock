@@ -1,3 +1,11 @@
+GIT
+  remote: https://github.com/noahgibbs/tmx.git
+  revision: 1f801fdd4a76e682dc863b29aefd25535e39a1ac
+  specs:
+    tmx (0.1.5)
+      multi_json (~> 1.0)
+      nokogiri (~> 1.5)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -25,9 +33,6 @@ GEM
     therubyracer (0.12.2)
       libv8 (~> 3.16.14.0)
       ref
-    tmx (0.1.5)
-      multi_json (~> 1.0)
-      nokogiri (~> 1.5)
     websocket-driver (0.5.4)
       websocket-extensions (>= 0.1.0)
     websocket-extensions (0.1.2)
@@ -41,7 +46,7 @@ DEPENDENCIES
   puma
   rack-coffee
   therubyracer
-  tmx
+  tmx!
 
 BUNDLED WITH
    1.10.5
