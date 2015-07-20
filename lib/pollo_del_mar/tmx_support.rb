@@ -58,8 +58,8 @@ class PDM
   def self.animations_from_tilesets tilesets
     tilesets.flat_map do |tileset|
       tileset.tiles.map do |tile|
-        p = tile[:properties]
-        if p && p[:animation-frame0]
+        p = tile["properties"]
+        if p && p["animation-frame0"]
           section = 0
           anim = []
           # TODO: animation delays
@@ -71,7 +71,7 @@ class PDM
             anim.push section_hash
             section += 1
           end
-          { "tile_anim_#{tile[:id]}".to_sym => anim }
+          { "tile_anim_#{tile["id"].to_i + tileset[:firstgid]}".to_sym => anim }
         else
           nil
         end
