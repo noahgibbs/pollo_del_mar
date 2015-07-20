@@ -12,6 +12,11 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
     @layer_order = []
     @width = data.width
     @height = data.height
+    @cur_cyclic_animations = {}
+    @cur_played_animations = {}
+
+    unless PDM.CreatejsDisplay._cyclicTimerStart?
+      PDM.CreatejsDisplay._cyclicTimerStart = (new Date()).getTime()
 
     when_sheet_complete @sheet, () =>
       for layer in data.layers
@@ -25,6 +30,15 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
         @layers[layer.name] = { sprites: [], container: container, data: layer.data }
 
       @handleExposure()
+
+      counter = 0
+      createjs.Ticker.addEventListener "tick", () =>
+        processed = 0
+        counter++
+        for sprite, anim of @cur_cyclic_animations
+          @_cyclicAnimationHandler sprite, anim
+          processed++
+        console.log "Processed #{processed} cyclic animations this tick." if counter % 100 == 0 && processed != 0
 
   setExposure: (@exposure) ->
     @handleExposure()
@@ -83,6 +97,7 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
             sprite.visible = true
             sprite.setTransform w * @sheet.tilewidth, h * @sheet.tileheight
             sprite.gotoAndStop @sheet.ss_frame_to_cjs_frame ld[h][w]
+          @_setCyclicAnimationHandler(sprite, ld[h][w], h, w)
 
   addToStage: (stage) ->
     stage.addChild @top_container
@@ -93,7 +108,44 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
       return if h < @last_start_tile_y || w < @last_start_tile_x
       return if h > @last_end_tile_y || w > @last_end_tile_x
       sprite = layer.sprites[h][w]
+
+      # Don't try cyclic animations and createjs animations at the same time
+      console.log "Deleting cyclic anim (animateTile)" if @cur_cyclic_animations[sprite]?
+      delete @cur_cyclic_animations[sprite]
+
+      # Track createjs animations for this sprite
+      @cur_played_animations[sprite] = anim
+      sprite.addEventListener "animationend",
+        (_1, _2, old_anim, new_anim) =>
+          if new_anim == null
+            delete @cur_played_animations[sprite]
+            @_setCyclicAnimationHandler(sprite, layer.data[h][w], h, w)
+            # TODO: start cyclic anim again, if there is one
+          else
+            @cur_played_animations[sprite] = new_anim
       sprite.gotoAndPlay(anim)
+
+  _setCyclicAnimationHandler: (sprite, tile_num, h, w) ->
+    anim = @sheet.cyclic_anim_for_tile(tile_num)
+    if anim?
+      console.log "Set cyclic animation: #{tile_num} #{h} #{w}"
+      @cur_cyclic_animations[sprite] = anim  # Overwrite previous, if any
+    else
+      console.log "Deleting cyclic anim (handler) #{h} #{w}" if @cur_cyclic_animations[sprite]?
+      delete @cur_cyclic_animations[sprite]
+
+  _cyclicAnimationHandler: (sprite, anim) ->
+    now = (new Date()).getTime()
+    anim_cycle_time = anim.cycle_time
+    offset = (now - PDM.CreatejsDisplay._cyclicTimerStart) % anim_cycle_time
+    section_index = 0
+    duration_index = 0
+    while section_index < anim.length
+      duration_index += anim[section_index].duration
+      break if duration_index >= offset
+      section_index++
+    section_index = (anim.length - 1) if section_index > (anim.length - 1)
+    sprite.gotoAndStop anim[section_index].frame
 
   moveTo: (x, y, opts) ->
     new_x = x * @sheet.tilewidth

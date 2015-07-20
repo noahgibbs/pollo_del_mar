@@ -1,5 +1,8 @@
 class PDM.CreatejsDisplay.CreatejsSpriteSheet
-  constructor: (@tilewidth, @tileheight, @images, @animations) ->
+  constructor: (data) ->
+    [ @tilewidth, @tileheight, @images, @animations, @ss_cyclic_animations ] =
+        [ data.tilewidth, data.tileheight, data.images, data.animations, data.cyclic_animations ]
+
     images = (image.image for image in @images)
     PDM.CreatejsDisplay.loader.addHandler () => @imagesLoaded()
     PDM.CreatejsDisplay.loader.addImages images
@@ -20,6 +23,8 @@ class PDM.CreatejsDisplay.CreatejsSpriteSheet
     if event == "complete"
       @handlers["complete"] = [] unless @handlers["complete"]?
       @handlers["complete"].push handler
+    else
+      console.error "Unknown event #{event} on spritesheet!"
 
   ss_frame_to_cjs_frame: (frame_num) ->
     for offset, image of @images
@@ -41,6 +46,21 @@ class PDM.CreatejsDisplay.CreatejsSpriteSheet
       frames = [frames] if typeof frames == "number"
       frames = @ss_anim_frames_to_cjs_anim_frames frames  # This time as Array
       { speed: animation.speed, next: animation.next, frames: frames }
+
+  cyclic_anim_for_tile: (tile) ->
+    @cyclic_animations["tile_anim_#{tile}"]
+
+  ss_cyclic_anim_to_pdm_cyclic_anim: (animation) ->
+    anim = []
+
+    total_duration = 0
+    total_duration += section.duration for section in animation
+    anim.cycle_time = total_duration
+
+    for section in animation
+      anim.push frame: @ss_frame_to_cjs_frame(section.frame), duration: section.duration * 10.0
+
+    anim
 
   imagesLoaded: () ->
     images = []
@@ -65,6 +85,14 @@ class PDM.CreatejsDisplay.CreatejsSpriteSheet
 
     @cjs_animations = {}
     @cjs_animations[name] = @ss_anim_frames_to_cjs_anim_frames(animation) for name, animation of @animations
+
+    console.log "Old cyclic anim", @ss_cyclic_animations
+    @cyclic_animations = {}
+    for name, animation of @ss_cyclic_animations
+      tile_num = parseInt name.slice(10)  # Cut off "tile_anim_"
+      new_num = @ss_frame_to_cjs_frame tile_num
+      @cyclic_animations["tile_anim_#{new_num}"] = @ss_cyclic_anim_to_pdm_cyclic_anim(animation)
+    console.log "New cyclic anim", @cyclic_animations
 
     @sheet = new createjs.SpriteSheet frames: { width: @tilewidth, height:  @tileheight }, images: images, animations: @cjs_animations
 

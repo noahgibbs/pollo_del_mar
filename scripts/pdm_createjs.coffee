@@ -70,7 +70,7 @@ class PDM.CreatejsDisplay extends PDM.Display
   # }
   #
   newSpriteSheet: (data) ->
-    @spritesheets[data.name] = new PDM.CreatejsDisplay.CreatejsSpriteSheet(data.tilewidth, data.tileheight, data.images, data.animations)
+    @spritesheets[data.name] = new PDM.CreatejsDisplay.CreatejsSpriteSheet(data)
 
   # Keys in data arg:
   #     name: name of spritestack
