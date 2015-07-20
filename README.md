@@ -15,3 +15,10 @@ TMX (format for the Tiled editor - mapeditor.org)
 ## Running
 
     $ puma config.ru -p 3001
+
+# References and Technical Influences
+
+The Tiled Map Editor
+Source of Tales
+The Mana Project / The Mana World
+Evol Online
