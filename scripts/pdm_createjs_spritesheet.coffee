@@ -86,13 +86,11 @@ class PDM.CreatejsDisplay.CreatejsSpriteSheet
     @cjs_animations = {}
     @cjs_animations[name] = @ss_anim_frames_to_cjs_anim_frames(animation) for name, animation of @animations
 
-    console.log "Old cyclic anim", @ss_cyclic_animations
     @cyclic_animations = {}
     for name, animation of @ss_cyclic_animations
       tile_num = parseInt name.slice(10)  # Cut off "tile_anim_"
       new_num = @ss_frame_to_cjs_frame tile_num
       @cyclic_animations["tile_anim_#{new_num}"] = @ss_cyclic_anim_to_pdm_cyclic_anim(animation)
-    console.log "New cyclic anim", @cyclic_animations
 
     @sheet = new createjs.SpriteSheet frames: { width: @tilewidth, height:  @tileheight }, images: images, animations: @cjs_animations
 

@@ -12,6 +12,8 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
     @layer_order = []
     @width = data.width
     @height = data.height
+    # TODO: how do I map sprites to current animations here?
+    @sprite_table = {}
     @cur_cyclic_animations = {}
     @cur_played_animations = {}
 
@@ -35,10 +37,11 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
       createjs.Ticker.addEventListener "tick", () =>
         processed = 0
         counter++
-        for sprite, anim of @cur_cyclic_animations
+        for own sprite_name, anim of @cur_cyclic_animations
+          sprite = @sprite_table[sprite_name]
           @_cyclicAnimationHandler sprite, anim
           processed++
-        console.log "Processed #{processed} cyclic animations this tick." if counter % 100 == 0 && processed != 0
+        console.log "Processed #{processed} cyclic animations this tick." if processed != 0
 
   setExposure: (@exposure) ->
     @handleExposure()
@@ -88,7 +91,10 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
           w_ctr = w - start_tile_x
           sprite = sprites[h_ctr][w_ctr]
           unless sprite
+            name = "sprite:#{h_ctr}/#{w_ctr}"
             sprite = sprites[h_ctr][w_ctr] = @sheet.create_sprite()
+            sprite.set name: name
+            @sprite_table[name] = sprite
             layer.container.addChild sprite
 
           if ld[h][w] is 0
@@ -110,29 +116,26 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
       sprite = layer.sprites[h][w]
 
       # Don't try cyclic animations and createjs animations at the same time
-      console.log "Deleting cyclic anim (animateTile)" if @cur_cyclic_animations[sprite]?
-      delete @cur_cyclic_animations[sprite]
+      console.log "Deleting cyclic anim (animateTile)" if @cur_cyclic_animations[sprite.name]?
+      delete @cur_cyclic_animations[sprite.name]
 
       # Track createjs animations for this sprite
-      @cur_played_animations[sprite] = anim
+      @cur_played_animations[sprite.name] = anim
       sprite.addEventListener "animationend",
         (_1, _2, old_anim, new_anim) =>
           if new_anim == null
-            delete @cur_played_animations[sprite]
+            delete @cur_played_animations[sprite.name]
             @_setCyclicAnimationHandler(sprite, layer.data[h][w], h, w)
-            # TODO: start cyclic anim again, if there is one
           else
-            @cur_played_animations[sprite] = new_anim
+            @cur_played_animations[sprite.name] = new_anim
       sprite.gotoAndPlay(anim)
 
   _setCyclicAnimationHandler: (sprite, tile_num, h, w) ->
     anim = @sheet.cyclic_anim_for_tile(tile_num)
     if anim?
-      console.log "Set cyclic animation: #{tile_num} #{h} #{w}"
-      @cur_cyclic_animations[sprite] = anim  # Overwrite previous, if any
+      @cur_cyclic_animations[sprite.name] = anim  # Overwrite previous, if any
     else
-      console.log "Deleting cyclic anim (handler) #{h} #{w}" if @cur_cyclic_animations[sprite]?
-      delete @cur_cyclic_animations[sprite]
+      delete @cur_cyclic_animations[sprite.name]
 
   _cyclicAnimationHandler: (sprite, anim) ->
     now = (new Date()).getTime()
