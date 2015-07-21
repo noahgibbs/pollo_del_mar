@@ -27,6 +27,7 @@ class PDM.CreatejsDisplay.CreatejsSpriteSheet
       console.error "Unknown event #{event} on spritesheet!"
 
   ss_frame_to_cjs_frame: (frame_num) ->
+    return 0 if frame_num == 0
     for offset, image of @images
       if frame_num >= image.firstgid && (!@images[offset + 1]? || frame_num < @images[offset + 1].firstgid)
         return (frame_num - @images[offset].firstgid) + @images[offset].cjs_offset

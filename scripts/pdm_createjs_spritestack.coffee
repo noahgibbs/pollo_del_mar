@@ -101,7 +101,7 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
             sprite.visible = true
             sprite.setTransform w * @sheet.tilewidth, h * @sheet.tileheight
             sprite.gotoAndStop @sheet.ss_frame_to_cjs_frame ld[h][w]
-          @_setCyclicAnimationHandler(sprite, ld[h][w], h, w)
+          @_setCyclicAnimationHandler(sprite, @sheet.ss_frame_to_cjs_frame(ld[h][w]), h, w)
 
   addToStage: (stage) ->
     stage.addChild @top_container
