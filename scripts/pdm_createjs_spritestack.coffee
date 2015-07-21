@@ -14,6 +14,7 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
     @height = data.height
     # TODO: how do I map sprites to current animations here?
     @sprite_table = {}
+    @sprite_ctr = 0
     @cur_cyclic_animations = {}
     @cur_played_animations = {}
 
@@ -35,13 +36,10 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
 
       counter = 0
       createjs.Ticker.addEventListener "tick", () =>
-        processed = 0
         counter++
-        for own sprite_name, anim of @cur_cyclic_animations
+        for sprite_name, anim of @cur_cyclic_animations
           sprite = @sprite_table[sprite_name]
           @_cyclicAnimationHandler sprite, anim
-          processed++
-        console.log "Processed #{processed} cyclic animations this tick." if processed != 0
 
   setExposure: (@exposure) ->
     @handleExposure()
@@ -91,7 +89,7 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
           w_ctr = w - start_tile_x
           sprite = sprites[h_ctr][w_ctr]
           unless sprite
-            name = "sprite:#{h_ctr}/#{w_ctr}"
+            name = "sprite:#{++@sprite_ctr}"
             sprite = sprites[h_ctr][w_ctr] = @sheet.create_sprite()
             sprite.set name: name
             @sprite_table[name] = sprite

@@ -55,7 +55,7 @@ class PDM.CreatejsDisplay.CreatejsSpriteSheet
 
     total_duration = 0
     total_duration += section.duration for section in animation
-    anim.cycle_time = total_duration
+    anim.cycle_time = total_duration * 10.0
 
     for section in animation
       anim.push frame: @ss_frame_to_cjs_frame(section.frame), duration: section.duration * 10.0
