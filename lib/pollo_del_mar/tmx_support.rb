@@ -1,8 +1,8 @@
 require "tmx"
 
-# TODO: terrain animations
 # TODO: object layers
 # TODO: image layers
+# TODO: oversize sprites (x1x2, etc)
 
 class PDM
   def self.sprites_from_tmx(filename)
