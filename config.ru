@@ -1,5 +1,7 @@
 Bundler.require :default
 
+Faye::WebSocket.load_adapter('thin')
+
 # Faux-gem, for now
 $LOAD_PATH.push File.join(__dir__, "lib")
 require "pollo_del_mar"

@@ -1,6 +1,7 @@
 source 'https://rubygems.org'
 
-gem 'puma'
+#gem 'puma'
+gem 'thin'
 gem 'faye-websocket'
 gem 'multi_json'
 
