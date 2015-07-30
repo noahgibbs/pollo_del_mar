@@ -1,16 +1,20 @@
-Needed for Minimal:
+Needed for Minimal Display:
 * Server-side humanoid sprites
 * Simple pop-up text dialog
 
-Needed for Prettyish:
+Needed for Prettyish Display:
 * Overlays / "over" layers
-* Compositing of fringe layer w/ humanoids
-** Z support
+* Compositing of fringe layer w/ humanoids, oversize sprites
+** Z support?
 * Client-side timings attached to events
-* Animated terrain
 
-Needed for Client-Side:
+Needed for Client-Side Movies:
 * Local "transport" w/ JavaScript events
+* Record/replay events
+
+Needed for Minimal Game:
+* Input events sent to server
+* Some amount of UI overlay
 
 Needed for More Game:
 * Reload between zones - new sprite sheet
