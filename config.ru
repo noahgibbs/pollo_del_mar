@@ -17,7 +17,7 @@ use Rack::ShowExceptions
 
 # Serve .js files from .coffee files dynamically
 use Rack::Coffee, :urls => ""  # TODO: how will these be served when it's a gem?
-use Rack::Static, :urls => ["/tiles", "/sprites"]
+use Rack::Static, :urls => ["/tiles", "/sprites", "/scripts/vendor"]
 
 def combined_handler
   Proc.new do |env|
