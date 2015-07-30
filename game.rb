@@ -123,25 +123,31 @@ class GoodShip
     @boat_spritestack = pdm_terrain[:spritestack]
     @boat_collision = pdm_terrain[:collision]
     @boat_spritestack["name"] = "evol-boat"
+
+    @zone = PDM::Zone.new spritestack: @boat_spritestack, spritesheet: @boat_spritesheet
   end
 
-  def on_open(socket)
-    PDM.record_traffic
-    socket.send PDM.websocket_game_message("displayNewSpriteSheet", @boat_spritesheet)
-    socket.send PDM.websocket_game_message("displayNewSpriteStack", @boat_spritestack)
-    socket.send PDM.websocket_game_message("displayNewSpriteSheet", TEST_HUM_SPRITESHEET)
-    socket.send PDM.websocket_game_message("displayNewSpriteStack", TEST_HUMANOID)
-    socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM)
-    socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM_2)
-    socket.send PDM.websocket_game_message("displayMoveStackTo", "test_humanoid_stack", 3, 3, "duration" => 3.0)
+  def on_open(options)
+    socket = options[:transport]
+    player = options[:player]
+    player.zone = @zone
+    player.transport = PDM::Transport.new socket
+    player.spritesheet = TEST_HUM_SPRITESHEET
+    player.spritestack = TEST_HUMANOID
+
+    player.display
+    player.message "displayStartAnimation", TEST_ANIM
+    player.message "displayStartAnimation", TEST_ANIM_2
+    player.message "displayMoveStackTo", "test_humanoid_stack", 3, 3, "duration" => 3.0
     EM.add_timer(3.0) do
-      socket.send PDM.websocket_game_message("displayPanStackTo", @boat_spritestack["name"], 500, 500, "duration" => 10.0)
+      player.message "displayPanStackTo", @boat_spritestack["name"], 500, 500, "duration" => 10.0
     end
     EM.add_timer(13.0) do
-      socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM_3)
-      socket.send PDM.websocket_game_message("displayStartAnimation", TEST_ANIM_4)
+      player.message "displayStartAnimation", TEST_ANIM_3
+      player.message "displayStartAnimation", TEST_ANIM_4
     end
   end
 end
 
+PDM.record_traffic
 PDM.run GoodShip.new

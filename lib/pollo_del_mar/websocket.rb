@@ -14,9 +14,10 @@ module PDM
     ws = Faye::WebSocket.new(env)
 
     ws.on :open do |event|
-      puts "Server open"
+      puts "Socket open"
       ws.send PDM.websocket_game_message("start")
-      @app.on_open(ws) if @app && @app.respond_to?(:on_open)
+      p = PDM::Player.new transport: ws
+      @app.on_open(transport: ws, player: p) if @app && @app.respond_to?(:on_open)
     end
 
     ws.on :message do |event|
