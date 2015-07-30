@@ -1,7 +1,13 @@
 class PDM
 
+  def self.record_traffic(record = true)
+    @record_traffic = record
+  end
+
   def self.websocket_game_message(msg_name, *args)
-    MultiJson.dump ["game_msg", msg_name, *args]
+    out_str = MultiJson.dump ["game_msg", msg_name, *args]
+    File.open("outgoing_traffic.json", "a") { |f| f.write out_str + "\n" } if @record_traffic
+    out_str
   end
 
   def self.websocket_handler(env)
@@ -14,6 +20,7 @@ class PDM
     end
 
     ws.on :message do |event|
+      File.open("incoming_traffic.json", "a") { |f| f.write event.data + "\n" } if @record_traffic
       data = MultiJson.load event.data
       puts "Got message: #{data.inspect}"
       handle_message ws, data
