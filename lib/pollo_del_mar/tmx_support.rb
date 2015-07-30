@@ -4,7 +4,7 @@ require "tmx"
 # TODO: image layers
 # TODO: oversize sprites (x1x2, etc)
 
-class PDM
+module PDM
   def self.sprites_from_tmx(filename)
     spritesheet = {}
     spritestack = {}

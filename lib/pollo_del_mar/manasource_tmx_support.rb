@@ -1,4 +1,4 @@
-class PDM
+module PDM
   # This is to support TMX files for ManaSource, ManaWorld, Land of
   # Fire, Source of Tales and other Mana Project games. It can't be
   # perfect since there's some variation between them, but it can

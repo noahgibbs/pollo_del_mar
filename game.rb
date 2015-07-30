@@ -3,7 +3,7 @@ TEST_HUM_SPRITESHEET = {
   "tilewidth" => 64,
   "tileheight" => 64,
   "properties" => {},
-  "animations" => animation_with_offset("body_", 1).merge(animation_with_offset("hat_", 95)),
+  "animations" => PDM.animation_with_offset("body_", 1).merge(PDM.animation_with_offset("hat_", 95)),
   "images" => [
     {
       "firstgid" => 1,
@@ -126,6 +126,7 @@ class GoodShip
   end
 
   def on_open(socket)
+    PDM.record_traffic
     socket.send PDM.websocket_game_message("displayNewSpriteSheet", @boat_spritesheet)
     socket.send PDM.websocket_game_message("displayNewSpriteStack", @boat_spritestack)
     socket.send PDM.websocket_game_message("displayNewSpriteSheet", TEST_HUM_SPRITESHEET)

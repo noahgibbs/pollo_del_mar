@@ -1,4 +1,4 @@
-class PDM
+module PDM
 
   def self.record_traffic(record = true)
     @record_traffic = record

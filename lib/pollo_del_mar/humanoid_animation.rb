@@ -18,13 +18,15 @@ HUMANOID_BASE_ANIMATION = {
   "spellcast_right" => [87, 93],
 }
 
-# Return a humanoid animation, offset by a constant number of frames.
-# This is used to have, say, multiple body or equipment animations in
-# the same spritesheet.
-def animation_with_offset(prefix, offset)
-  anim = {}
-  HUMANOID_BASE_ANIMATION.each do |key, value|
-    anim[prefix + key] = value.map { |f| f.is_a?(Fixnum) ? f + offset : f }
+module PDM
+  # Return a humanoid animation, offset by a constant number of frames.
+  # This is used to have, say, multiple body or equipment animations in
+  # the same spritesheet.
+  def self.animation_with_offset(prefix, offset)
+    anim = {}
+    HUMANOID_BASE_ANIMATION.each do |key, value|
+      anim[prefix + key] = value.map { |f| f.is_a?(Fixnum) ? f + offset : f }
+    end
+    anim
   end
-  anim
 end
