@@ -16,8 +16,7 @@ module PDM
     ws.on :open do |event|
       puts "Socket open"
       ws.send PDM.websocket_game_message("start")
-      p = PDM::Player.new transport: ws
-      @app.on_open(transport: ws, player: p) if @app && @app.respond_to?(:on_open)
+      @app.on_open(transport: ws) if @app && @app.respond_to?(:on_open)
     end
 
     ws.on :message do |event|
