@@ -8,7 +8,8 @@ class PDM::Player
   def initialize options
     @transport = options[:transport]
     @name = options[:name] || "player"
-    @humanoid = PDM::ManaHumanoid.new @name, [ "skeleton", "kettle_hat_male" ], "png"
+    @layers = [ "skeleton", "kettle_hat_male" ]
+    @humanoid = PDM::ManaHumanoid.new @name, @layers, "png"
   end
 
   def message(*args)
@@ -22,6 +23,19 @@ class PDM::Player
     end
     self.message "displayNewSpriteSheet", @humanoid.build_spritesheet_json
     self.message "displayNewSpriteStack", @humanoid.build_spritestack_json
+  end
+
+  def send_animation anim_name
+    @layers.each do |layer|
+      anim_msg = {
+        "stack" => "#{@name}_stack",
+        "layer" => layer,
+        "w" => 0,
+        "h" => 0,
+        "anim" => "#{layer}_#{anim_name}"
+      }
+      message "displayStartAnimation", anim_msg
+    end
   end
 
   # This moves to a location in the current zone

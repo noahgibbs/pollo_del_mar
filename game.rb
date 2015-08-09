@@ -14,22 +14,6 @@ TEST_ANIM_2 = {
   "anim" => "kettle_hat_male_walk_left"
 }
 
-TEST_ANIM_3 = {
-  "stack" => "player_stack",
-  "layer" => "skeleton",
-  "w" => 0,
-  "h" => 0,
-  "anim" => "skeleton_stand_right"
-}
-
-TEST_ANIM_4 = {
-  "stack" => "player_stack",
-  "layer" => "kettle_hat_male",
-  "w" => 0,
-  "h" => 0,
-  "anim" => "kettle_hat_male_stand_right"
-}
-
 class GoodShip
   def initialize
     pdm_terrain = PDM.sprites_from_tmx File.join(__dir__, "tmx", "terrain-test.tmx")
@@ -52,15 +36,13 @@ class GoodShip
     player.zone = @zone
 
     player.display
-    player.message "displayStartAnimation", TEST_ANIM
-    player.message "displayStartAnimation", TEST_ANIM_2
+    player.send_animation "walk_left"
     player.message "displayMoveStackTo", "player_stack", 3, 3, "duration" => 3.0
     EM.add_timer(3.0) do
       player.message "displayPanStackTo", @boat_spritestack["name"], 500, 500, "duration" => 10.0
     end
     EM.add_timer(13.0) do
-      player.message "displayStartAnimation", TEST_ANIM_3
-      player.message "displayStartAnimation", TEST_ANIM_4
+      player.send_animation "stand_right"
     end
   end
 end
