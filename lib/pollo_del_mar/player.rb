@@ -39,6 +39,7 @@ class PDM::Player
   end
 
   # This moves to a location in the current zone
-  def move_to(x, y)
+  def move_to(x, y, options = {})
+    message "displayMoveStackTo", "#{@name}_stack", x, y, options
   end
 end
