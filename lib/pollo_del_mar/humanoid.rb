@@ -53,28 +53,27 @@ module PDM
 
     def build_spritesheet_json
       images = (@layers.zip(0..(@layers.size - 1))).flat_map do |layer, index|
-        firstgid = 1 + index * HUMANOID_IMAGE_OFFSETS[:total]
         [
           {
-            "firstgid" => firstgid + HUMANOID_IMAGE_OFFSETS[:walkcycle] + layer[:offset],
+            "firstgid" => HUMANOID_IMAGE_OFFSETS[:walkcycle] + layer[:offset],
             "image" => "/sprites/#{layer[:name]}_walkcycle.#{@format}",
             "image_width" => 576,
             "image_height" => 256,
           },
           {
-            "firstgid" => firstgid + HUMANOID_IMAGE_OFFSETS[:hurt] + layer[:offset],
+            "firstgid" => HUMANOID_IMAGE_OFFSETS[:hurt] + layer[:offset],
             "image" => "/sprites/#{layer[:name]}_hurt.#{@format}",
             "image_width" => 384,
             "image_height" => 64,
           },
           {
-            "firstgid" => firstgid + HUMANOID_IMAGE_OFFSETS[:slash] + layer[:offset],
+            "firstgid" => HUMANOID_IMAGE_OFFSETS[:slash] + layer[:offset],
             "image" => "/sprites/#{layer[:name]}_slash.#{@format}",
             "image_width" => 384,
             "image_height" => 256,
           },
           {
-            "firstgid" => firstgid + HUMANOID_IMAGE_OFFSETS[:spellcast] + layer[:offset],
+            "firstgid" => HUMANOID_IMAGE_OFFSETS[:spellcast] + layer[:offset],
             "image" => "/sprites/#{layer[:name]}_spellcast.#{@format}",
             "image_width" => 448,
             "image_height" => 256,
