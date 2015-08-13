@@ -1,3 +1,7 @@
+# TODO: Set the HTML canvas from these? Or vice-versa?
+CANVAS_WIDTH = 640
+CANVAS_HEIGHT = 480
+
 class GoodShip
   def initialize
     pdm_terrain = PDM.sprites_from_tmx File.join(__dir__, "tmx", "terrain-test.tmx")
@@ -16,18 +20,18 @@ class GoodShip
 
   def on_open(options)
     socket = options[:transport]
-    player = PDM::Player.new transport: PDM::Transport.new(socket), name: "player"
+    player = PDM::Player.new transport: PDM::Transport.new(socket), name: "player", width: CANVAS_WIDTH, height: CANVAS_HEIGHT
     player.zone = @zone
 
     player.display
-    player.send_animation "walk_right"
-    player.move_to 3, 3, "duration" => 3.0
-    EM.add_timer(3.0) do
-      player.message "displayPanStackTo", @boat_spritestack["name"], 500, 500, "duration" => 10.0
-    end
-    EM.add_timer(13.0) do
-      player.send_animation "stand_right"
-    end
+    player.teleport_to_tile 3, 3
+    player.walk_to_tile 16, 8
+    #EM.add_timer(3.0) do
+    #  player.send_pan_to_pixel_offset(500, 500, "duration" => 10.0)
+    #end
+    #EM.add_timer(13.0) do
+    #  player.send_animation "stand_right"
+    #end
   end
 end
 

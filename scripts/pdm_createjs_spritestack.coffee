@@ -148,6 +148,10 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
     section_index = (anim.length - 1) if section_index > (anim.length - 1)
     sprite.gotoAndStop anim[section_index].frame
 
+  teleportTo: (x, y, opts) ->
+    new_x = x * @sheet.tilewidth
+    new_y = y * @sheet.tileheight
+
   moveTo: (x, y, opts) ->
     new_x = x * @sheet.tilewidth
     new_y = y * @sheet.tileheight

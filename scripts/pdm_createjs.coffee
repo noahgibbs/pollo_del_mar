@@ -5,6 +5,7 @@ messageMap = {
   "displayNewSpriteStack": "newSpriteStack",
   "displayStartAnimation": "startAnimation",
   "displayMoveStackTo": "moveStackTo",
+  "displayTeleportStackTo": "teleportStackTo",
   "displayInstantPanStackTo": "instantPanStackTo",
   "displayPanStackTo": "panStackTo",
 }
@@ -26,7 +27,7 @@ class PDM.CreatejsDisplay extends PDM.Display
     createjs.Ticker.addEventListener "tick", (event) =>
       @stage.update event
 
-  # Figure out how to expose CreateJS events:
+  # TODO: Figure out how to expose CreateJS events:
   #   complete  (everything complete)
   #   error     (error while loading)
   #   progress  (total queue progress)
@@ -92,6 +93,10 @@ class PDM.CreatejsDisplay extends PDM.Display
   startAnimation: (data) ->
     stack = @spritestacks[data.stack]
     stack.animateTile data.layer, data.h, data.w, data.anim
+
+  teleportStackTo: (stack, x, y, options) ->
+    stack = @spritestacks[stack]
+    stack.teleportTo x, y, duration: options.duration || 1.0
 
   moveStackTo: (stack, x, y, options) ->
     stack = @spritestacks[stack]
