@@ -93,7 +93,6 @@ class PDM::Player
     upper_left_x = highest_offset_x if upper_left_x > highest_offset_x
     upper_left_y = highest_offset_y if upper_left_y > highest_offset_y
 
-    STDERR.puts "Panning: tile_center: #{tile_center_x}, #{tile_center_y} / upper_left: #{upper_left_x}, #{upper_left_y} / highest_offset: #{highest_offset_x}, #{highest_offset_y}"
     [upper_left_x, upper_left_y]
   end
 
@@ -139,7 +138,6 @@ class PDM::Player
       time_to_walk = distance / speed
     end
 
-    STDERR.puts "Walking: delta: #{x_delta}, #{y_delta} distance: #{distance} time: #{time_to_walk}"
     send_animation "walk_#{@cur_dir}"
     cur_anim_counter = @anim_counter
 

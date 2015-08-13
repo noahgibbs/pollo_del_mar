@@ -25,7 +25,16 @@ class GoodShip
 
     player.display
     player.teleport_to_tile 3, 3
-    player.walk_to_tile 16, 8
+    player.walk_to_tile 16, 8, "speed" => 5.0
+    EM.add_timer(5) do
+      player.walk_to_tile 8, 16, "speed" => 5.0
+      EM.add_timer(5) do
+        player.walk_to_tile 16, 16, "speed" => 5.0
+        EM.add_timer(5) do
+          player.walk_to_tile 4, 4, "speed" => 5.0
+        end
+      end
+    end
     #EM.add_timer(3.0) do
     #  player.send_pan_to_pixel_offset(500, 500, "duration" => 10.0)
     #end

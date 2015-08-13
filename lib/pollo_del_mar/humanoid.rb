@@ -1,10 +1,10 @@
 HUMANOID_BASE_ANIMATION = {
   "stand_up" => [0],
-  "walk_up" => [1, 8],
+  "walk_up" => [1, 8, "walk_up", 0.25],
   "stand_left" => [9],
   "walk_left" => [10, 17, "walk_left", 0.25],
   "stand_down" => [18],
-  "walk_down" => [19, 26],
+  "walk_down" => [19, 26, "walk_down", 0.25],
   "stand_right" => [27],
   "walk_right" => [28, 35, "walk_right", 0.25],
   "hurt" => [36, 41, "hurt", 0.25],
