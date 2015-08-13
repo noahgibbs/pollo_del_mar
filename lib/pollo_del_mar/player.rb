@@ -69,7 +69,8 @@ class PDM::Player
   # Pan the display to a pixel offset (upper-left corner) in the current spritestack
   def send_pan_to_pixel_offset(x, y, options = {})
     @pan_counter += 1
-    message "displayPanStackTo", @zone.spritestack["name"], x, y, options
+    message "displayPanStackToPixel", @zone.spritestack["name"], x, y, options
+    message "displayPanStackToPixel", @humanoid.stack_name, x, y, options
   end
 
   def pan_offset_for_center_tile(x, y)

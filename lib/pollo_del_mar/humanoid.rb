@@ -51,6 +51,10 @@ module PDM
       @anim = :stand
     end
 
+    def stack_name
+      "#{name}_stack"
+    end
+
     def build_spritesheet_json
       images = (@layers.zip(0..(@layers.size - 1))).flat_map do |layer, index|
         [
@@ -102,7 +106,7 @@ module PDM
       end
 
       {
-        "name" => "#{@name}_stack",
+        "name" => stack_name,
         "width" => 1,
         "height" => 1,
         "spritesheet" => "#{name}_spritesheet",

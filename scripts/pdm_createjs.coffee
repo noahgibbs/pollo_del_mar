@@ -120,10 +120,10 @@ class PDM.CreatejsDisplay extends PDM.Display
     stack = @spritestacks[stack]
     stack.panToExposure x, y, duration: options.duration || 1.0
 
-  instantPanStackTo: (stack, x, y) ->
+  instantPanStackToPixel: (stack, x, y) ->
     stack = @spritestacks[stack]
     stack.setExposurePixel x: x, y: y, width: @display_width, height: @display_height
 
-  panStackTo: (stack, x, y, options) ->
+  panStackToPixel: (stack, x, y, options) ->
     stack = @spritestacks[stack]
     stack.panToExposurePixel x, y, duration: options.duration || 1.0
