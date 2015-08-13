@@ -50,14 +50,18 @@ class PDM::Player
 
   # Move to a location on the current spritestack
   def teleport_to_tile(x, y, options = {})
-    message "displayTeleportStackTo", "#{@name}_stack", x, y, options
+    pixel_x = x * @zone.spritesheet[:tilewidth]
+    pixel_y = y * @zone.spritesheet[:tileheight]
+    message "displayTeleportStackToPixel", "#{@name}_stack", pixel_x, pixel_y, options
     @x = x
     @y = y
   end
 
   # Move to a location on the current spritestack
   def move_to_tile(x, y, options = {})
-    message "displayMoveStackTo", "#{@name}_stack", x, y, options
+    pixel_x = x * @zone.spritesheet[:tilewidth]
+    pixel_y = y * @zone.spritesheet[:tileheight]
+    message "displayMoveStackToPixel", "#{@name}_stack", pixel_x, pixel_y, options
     @x = x
     @y = y
   end
@@ -77,8 +81,8 @@ class PDM::Player
     tile_center_x = x * tilewidth + tilewidth / 2
     tile_center_y = y * tileheight + tileheight / 2
 
-    upper_left_x = tile_center_x #- @view_width / 2
-    upper_left_y = tile_center_y #- @view_height / 2
+    upper_left_x = tile_center_x - @view_width / 2
+    upper_left_y = tile_center_y - @view_height / 2
 
     highest_offset_x = sheetwidth - @view_width
     highest_offset_y = sheetheight - @view_height

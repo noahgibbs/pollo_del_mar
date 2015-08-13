@@ -149,22 +149,29 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
     sprite.gotoAndStop anim[section_index].frame
 
   teleportTo: (x, y, opts) ->
-    new_x = x * @sheet.tilewidth
-    new_y = y * @sheet.tileheight
+    @x = x * @sheet.tilewidth
+    @y = y * @sheet.tileheight
+
+  teleportToPixel: (x, y, opts) ->
+    @x = x
+    @y = y
 
   moveTo: (x, y, opts) ->
     new_x = x * @sheet.tilewidth
     new_y = y * @sheet.tileheight
+    @moveToPixel new_x, new_y, opts
+
+  moveToPixel: (x, y, opts) ->
     duration = opts.duration || 1.0
     when_sheet_complete @sheet, () =>
       createjs.Tween.get(this)
-        .to({x: new_x, y: new_y}, duration * 1000.0, createjs.Ease.linear)
+        .to({x: x, y: y}, duration * 1000.0, createjs.Ease.linear)
         .addEventListener("change", () => @handleExposure())
         .call (tween) =>  # on complete, set new @x and @y
           @x = x
           @y = y
 
-  panToExposure: (new_exp_x, new_exp_y, opts) ->
+  panToExposurePixel: (new_exp_x, new_exp_y, opts) ->
     duration = opts.duration || 1.0
     when_sheet_complete @sheet, () =>
       createjs.Tween.get(@exposure)
@@ -173,3 +180,6 @@ class PDM.CreatejsDisplay.CreatejsSpriteStack
         .call (tween) =>
           @exposure.x = new_exp_x
           @exposure.y = new_exp_y
+
+  panToExposure: (new_exp_x, new_exp_y, opts) ->
+    @panToExposurePixel new_exp_x * @sheet.tilewidth, new_exp_y * @sheet.tileheight, opts

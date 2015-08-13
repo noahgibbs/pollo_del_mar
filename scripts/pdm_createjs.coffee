@@ -6,8 +6,10 @@ messageMap = {
   "displayStartAnimation": "startAnimation",
   "displayMoveStackTo": "moveStackTo",
   "displayTeleportStackTo": "teleportStackTo",
-  "displayInstantPanStackTo": "instantPanStackTo",
-  "displayPanStackTo": "panStackTo",
+  "displayMoveStackToPixel": "moveStackToPixel",
+  "displayTeleportStackToPixel": "teleportStackToPixel",
+  "displayInstantPanStackToPixel": "instantPanStackToPixel",
+  "displayPanStackToPixel": "panStackToPixel",
 }
 
 class PDM.CreatejsDisplay extends PDM.Display
@@ -102,6 +104,14 @@ class PDM.CreatejsDisplay extends PDM.Display
     stack = @spritestacks[stack]
     stack.moveTo x, y, duration: options.duration || 1.0
 
+  teleportStackToPixel: (stack, x, y, options) ->
+    stack = @spritestacks[stack]
+    stack.teleportToPixel x, y, duration: options.duration || 1.0
+
+  moveStackToPixel: (stack, x, y, options) ->
+    stack = @spritestacks[stack]
+    stack.moveToPixel x, y, duration: options.duration || 1.0
+
   instantPanStackTo: (stack, x, y) ->
     stack = @spritestacks[stack]
     stack.setExposure x: x, y: y, width: @display_width, height: @display_height
@@ -109,3 +119,11 @@ class PDM.CreatejsDisplay extends PDM.Display
   panStackTo: (stack, x, y, options) ->
     stack = @spritestacks[stack]
     stack.panToExposure x, y, duration: options.duration || 1.0
+
+  instantPanStackTo: (stack, x, y) ->
+    stack = @spritestacks[stack]
+    stack.setExposurePixel x: x, y: y, width: @display_width, height: @display_height
+
+  panStackTo: (stack, x, y, options) ->
+    stack = @spritestacks[stack]
+    stack.panToExposurePixel x, y, duration: options.duration || 1.0
