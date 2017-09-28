@@ -6,12 +6,16 @@ clearly superior to a Rails-style per-request server.
 
 I'm currently gluing together the following technologies:
 
-Faye-Websockets
-Thin (Faye needs a specific adapter)
-Puma (not any more - kept getting weird hangs on startup)
-CoffeeScript
-CreateJS / EaselJS (createjs.com)
-TMX (format for the Tiled editor - mapeditor.org)
+* Faye-Websockets
+* Thin (Faye needs a specific adapter)
+* Puma (not any more - kept getting weird hangs on startup)
+* CoffeeScript
+* CreateJS / EaselJS (createjs.com)
+* TMX (format for the Tiled editor - mapeditor.org)
+
+## Setup
+
+Run Bundler to install the appropriate gems.
 
 ## Running
 
